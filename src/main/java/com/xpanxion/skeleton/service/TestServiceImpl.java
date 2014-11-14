@@ -30,6 +30,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public List<TestBean> getTestBeans() {
+    	System.out.println("Tried to get test beans");
         List<TestEntity> testItems = this.testDao.getAllItems();
         List<TestBean> output = new ArrayList<TestBean>();
         for (TestEntity entity : testItems) {
@@ -37,7 +38,7 @@ public class TestServiceImpl implements TestService {
             BeanUtils.copyProperties(entity, bean);
             bean.setText(entity.getValue());
             output.add(bean);
-
+            System.out.println(bean.getText());
         }
         return output;
     }

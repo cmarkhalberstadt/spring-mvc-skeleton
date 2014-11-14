@@ -77,12 +77,14 @@
 			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
+		<!--  
 		<dependency>
 			<artifactId>liquibase-core</artifactId>
 			<groupId>org.liquibase</groupId>
 			<version>3.0.5</version>
 			<scope>compile</scope>
 		</dependency>
+		-->
 		<dependency>
 			<artifactId>tomcat-servlet-api</artifactId>
 			<groupId>org.apache.tomcat</groupId>
@@ -110,14 +112,14 @@
              -->
         
         <!-- Derby -->   
-        <!-- 
+        
         <dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.10.1.1</version>
 			<scope>runtime</scope>
 		</dependency>
-        -->
+        
            
         <!-- H2 -->
         <!-- 

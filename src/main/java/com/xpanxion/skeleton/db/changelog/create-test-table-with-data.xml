@@ -12,10 +12,10 @@
 			</column>
 			<column name="info" type="text"/>
 		</createTable>
-		<insert tableName="test">
+	    <insert tableName="test">
 			<column name="info" value="Test One"/>
 		</insert>
-		<insert tableName="test">
+	    <insert tableName="test">
 			<column name="info" value="Yep It Works"/>
 		</insert>
 	</changeSet>                    
