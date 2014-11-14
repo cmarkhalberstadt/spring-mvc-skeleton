@@ -21,7 +21,7 @@ import com.xpanxion.skeleton.service.UserTestService;
  * @author mhalberstadt
  *
  */
-@Controller
+//@Controller
 public class UsersController {
 	
 	private UserTestService userTestService;

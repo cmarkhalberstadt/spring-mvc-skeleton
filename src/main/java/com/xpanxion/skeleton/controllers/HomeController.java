@@ -14,7 +14,7 @@ import com.xpanxion.skeleton.service.TestService;
  * @author brian
  * 
  */
-@Controller
+//@Controller
 public class HomeController {
 
     private TestService testService;

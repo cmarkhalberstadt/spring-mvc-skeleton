@@ -26,6 +26,28 @@ import com.xpanxion.skeleton.service.UserTestService;
 public class RESTAPIController {
 	private UserTestService userTestService;
 	
+	
+	/**
+	 * Controller for the Main page
+	 * 
+	 */
+	@RequestMapping(value="**/main", method=RequestMethod.GET)
+	public ModelAndView getMainPage(){
+		ModelAndView mAndV = new ModelAndView("main");
+		return mAndV;
+	}
+	
+	/**
+     * The default controller action for the homepage. 
+     * 
+     * @return the Model and View for the home page. 
+     */
+    @RequestMapping(value="**/home", method=RequestMethod.GET)
+    public ModelAndView getHomePage() {
+        ModelAndView mAndV = new ModelAndView("home");
+        return mAndV;
+    }
+	
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public ArrayList<UserBean> getAllUsers(){
@@ -37,19 +59,19 @@ public class RESTAPIController {
 	 * @param Username String of the username to be found in the list and have user info returned for
 	 * @return String containing JSON information 
 	 */
-	@RequestMapping( method=RequestMethod.GET)
+	@RequestMapping(value="**/users", method=RequestMethod.GET)
 	@ResponseBody
-	public String getSpecificUserByRequestParam(@RequestParam String Username){
+	public UserBean getSpecificUserByRequestParam(@RequestParam String Username){
 		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
 		int numEntries = list.size();
 		for (int i = 0; i<numEntries; i++){
 			UserBean bean = list.get(i);
 			if (bean.getUserName().equals(Username)){
-				return this.convertUserBeanToJSON(bean);
+				return bean;
 			}
 		}
-		// this username is not in the list - return the empty string
-		return "";
+		// this username is not in the list - return an empty bean
+		return null;
 	}
 	
 	
@@ -60,17 +82,17 @@ public class RESTAPIController {
 	 */
 	@RequestMapping(method=RequestMethod.GET)
 	@ResponseBody
-	public String getSpecificUserByPathVariable(@PathVariable String Username){
+	public UserBean getSpecificUserByPathVariable(@PathVariable String Username){
 		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
 		int numEntries = list.size();
 		for (int i = 0; i<numEntries; i++){
 			UserBean bean = list.get(i);
 			if (bean.getUserName().equals(Username)){
-				return this.convertUserBeanToJSON(bean);
+				return bean;
 			}
 		}
 		// this username is not in the list - return the empty string
-		return "";
+		return null;
 	}
 	
 	

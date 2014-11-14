@@ -16,7 +16,7 @@ import com.xpanxion.skeleton.service.TestService;
  * @author mhalberstadt
  *
  */
-@Controller
+//@Controller
 public class MainController {
 	
 	/**
