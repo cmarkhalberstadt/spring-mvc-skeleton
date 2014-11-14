@@ -18,7 +18,7 @@ import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.service.UserTestService;
 
 /**
- * 
+ * RESTFul Webservice Controller
  * @author mhalberstadt
  *
  */
