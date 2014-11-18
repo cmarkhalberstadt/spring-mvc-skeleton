@@ -8,8 +8,8 @@
 <body>
 <h1>Main Page</h1>
 
-<a href="usersAuthentication_target_users" >Users</a> 
-<a href="usersAuthentication_target_home" name="homeLink">Home</a>
+<a href="usersAuthentication/users" >Users</a> 
+<a href="usersAuthentication/home" name="homeLink">Home</a>
 
 
 </body>

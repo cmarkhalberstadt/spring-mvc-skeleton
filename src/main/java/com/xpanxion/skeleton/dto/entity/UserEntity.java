@@ -7,6 +7,11 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+
+import org.hibernate.annotations.*;
+
+//@NamedQuery(name = "userNamesAndPasswords.getAll", query = "from UserEntity")
+//@SQLInsert(sql="INSERT INTO userNamesAndPasswords(username, password) VALUES(?, ?)")
 /**
  * User Entity
  * 
@@ -18,7 +23,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "userNamesAndPasswords")
-@NamedQuery(name = "userNamesAndPasswords.getAll", query = "from UserEntity")
 public class UserEntity {
 	private long id;
 	private String userName;

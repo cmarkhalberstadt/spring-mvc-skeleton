@@ -14,6 +14,6 @@
 </c:forEach>
 </table>
 -->
-<a href="usersAuthentication_target_users">Users</a> <a href="main">Main</a>
+<a href="usersAuthentication/users">Users</a> <a href="main">Main</a>
 </body>
 </html>

@@ -10,9 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
+import org.hibernate.SessionFactory;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.HibernateException;
 
 import com.xpanxion.skeleton.dto.beans.UserBean;
+import com.xpanxion.skeleton.dto.entity.UserEntity;
 import com.xpanxion.skeleton.service.UserTestService;
 
 /**
@@ -21,7 +27,7 @@ import com.xpanxion.skeleton.service.UserTestService;
  * @author mhalberstadt
  *
  */
-//@Controller
+@Controller
 public class UsersController {
 	
 	private UserTestService userTestService;
@@ -31,7 +37,7 @@ public class UsersController {
 	 * Returns the ModelAndView object for the users page
 	 * 
 	 */
-	@RequestMapping("**/users")
+	@RequestMapping(value="/users", method=RequestMethod.GET)
 	public ModelAndView getUsersPage(){
 		ModelAndView mAndV = new ModelAndView("users");
 		mAndV.addObject("users", this.userTestService.getUserTestBeans());
@@ -39,10 +45,117 @@ public class UsersController {
 	}
 	
 	/**
-	 * Returns the ModelAndView object for the users authentication page
+	 * Returns the ModelAndView object for the users page
 	 * 
 	 */
-	@RequestMapping("**/usersAuthentication")
+	@RequestMapping(value="/addNewUserPage", method=RequestMethod.GET)
+	public ModelAndView getNewUserPage(){
+		ModelAndView mAndV = new ModelAndView("addNewUserPage");
+		mAndV.addObject("users", this.userTestService.getUserTestBeans());
+		String errorString="";
+		mAndV.addObject("errorString", errorString);
+		return mAndV;
+	}
+	
+	@RequestMapping(value="/addNewUser", method=RequestMethod.POST)
+	public ModelAndView addANewUserToTheTableOfUsers(
+			@RequestParam String Username,
+			@RequestParam String Password_1, 
+			@RequestParam String Password_2 
+			){
+		
+		// validate the input user information
+		if (Password_1.equals(Password_2)){
+			// add new user to the database
+			
+			Session session = this.userTestService.getUserDao().getSessionFactory().openSession();
+			Transaction tx = null;
+			
+			try {
+				tx = session.beginTransaction();
+			} catch (HibernateException ex){
+				System.err.println("Exception thrown when beginning transaction: " + ex);
+			}
+			
+			String tableName = "usernamesandpasswords";
+			
+			String SQLQuery = "INSERT INTO " + tableName + " (username, password)" + "\n";
+			SQLQuery += "VALUES ('" + Username + "', '" + Password_1 + "');";
+			
+			session.createSQLQuery(SQLQuery).executeUpdate();
+			
+			try {
+				if (tx != null){
+					tx.commit();
+				}
+			} catch (HibernateException ex){
+				System.err.println("Exception thrown when committing transaction: " + ex);
+				if (tx != null){
+					tx.rollback();
+				}
+			} finally {
+				session.close();
+			}
+			return this.getUsersPage();
+		} else {
+			ModelAndView mAndV = new ModelAndView("addNewUserPage");
+			mAndV.addObject("users", this.userTestService.getUserTestBeans());
+			String errorString="Passwords did not match. Please put your information in again.";
+			mAndV.addObject("errorString", errorString);
+			return mAndV;
+		}
+		
+		
+	}
+	
+	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
+	public String getChangePasswordPage(@PathVariable String Username){
+		System.out.println("Put method called with " + Username + " as Username.");
+		ModelAndView mAndV = new ModelAndView("changePassword");
+		String errorString = "";
+		mAndV.addObject("errorString", errorString);
+		mAndV.addObject("userName", Username);
+		//return mAndV;
+		return "/main";
+	}
+	
+	
+	
+	
+	@RequestMapping(value="/user/{Username}", method=RequestMethod.DELETE)
+	public ModelAndView deleteGivenUserFromDataBase(@PathVariable String Username){
+		Session session = this.userTestService.getUserDao().getSessionFactory().openSession();
+		Transaction tx = null;
+		
+		try {
+			tx = session.beginTransaction();
+		} catch (HibernateException ex){
+			System.err.println("Exception thrown when beginning transaction: " + ex);
+		}
+		
+		String tableName = "usernamesandpasswords";
+		
+		String SQLQuery = "DELETE FROM " + tableName  + "\n";
+		SQLQuery += "WHERE username='" + Username + "';";
+		
+		session.createSQLQuery(SQLQuery).executeUpdate();
+		
+		try {
+			if (tx != null){
+				tx.commit();
+			}
+		} catch (HibernateException ex){
+			System.err.println("Exception thrown when committing transaction: " + ex);
+			if (tx != null){
+				tx.rollback();
+			}
+		} finally {
+			session.close();
+		}
+		return this.getUsersPage();
+	}
+	
+	
 	public ModelAndView getUsersAuthenticationPage(){
 		String errorString = "";
 		ModelAndView mAndV = new ModelAndView("usersAuthentication");
@@ -54,25 +167,32 @@ public class UsersController {
 	 * Returns the ModelAndView object for the users authentication page with target page users
 	 * 
 	 */
-	@RequestMapping("**/usersAuthentication_target_users")
-	public ModelAndView getUsersAuthenticationPage_target_users(){
-		this.targetPageAfterUserAuthentication = "users";
+	@RequestMapping(value="/usersAuthentication/{targetPage}", method=RequestMethod.GET)
+	public ModelAndView getUsersAuthenticationPage_target_users(@PathVariable String targetPage){
+		System.out.println("Correct Method " + targetPage );
+		this.targetPageAfterUserAuthentication = targetPage;
 		return this.getUsersAuthenticationPage();
 	}
 	
 	
-	/**
-	 * Returns the ModelAndView object for the users authentication page with target page home
-	 * 
-	 */
-	@RequestMapping("**/usersAuthentication_target_home")
-	public ModelAndView getUsersAuthenticationPage_target_home(){
-		this.targetPageAfterUserAuthentication = "home";
-		return this.getUsersAuthenticationPage();
+	// TODO - Fix me - Currently not working
+	//@RequestMapping(value="/user/{Username}", method=RequestMethod.GET)
+	public ModelAndView userNameAndPasswordSubmitWithPathVariable(@PathVariable String Username,@RequestParam("Password") String Password, Model m){
+		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
 	}
 	
-	@RequestMapping(value="**/usersAuthentication", method=RequestMethod.POST)
-	public ModelAndView userNameAndPasswordSubmit(@RequestParam String Username,@RequestParam String Password, Model m){
+	
+	@RequestMapping(value="/user", method=RequestMethod.GET)
+	public ModelAndView userNameAndPasswordSubmitWithRequestParam(@RequestParam String Username,@RequestParam String Password, Model m){
+		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
+	}
+	
+	
+	
+	private ModelAndView getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(
+			String Username,
+			String Password
+			){
 		String errorString = "";
 		ModelAndView mAndV = null;
 		/*

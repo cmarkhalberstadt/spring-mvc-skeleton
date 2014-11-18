@@ -3,6 +3,8 @@ package com.xpanxion.skeleton.service;
 import java.util.List;
 
 
+
+import com.xpanxion.skeleton.dao.UserDao;
 import com.xpanxion.skeleton.dto.beans.UserBean;
 
 /**
@@ -19,4 +21,11 @@ public interface UserTestService {
      * @return all of the user test beans
      */
     List<UserBean> getUserTestBeans();
+    
+    /**
+     * Return the UserDao Object for this service
+     * 
+     * @return the UserDao Object for this service
+     */
+    public UserDao getUserDao();
 }

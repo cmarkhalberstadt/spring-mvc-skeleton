@@ -16,14 +16,14 @@ import com.xpanxion.skeleton.service.TestService;
  * @author mhalberstadt
  *
  */
-//@Controller
+@Controller
 public class MainController {
 	
 	/**
 	 * Controller for the Main page
 	 * 
 	 */
-	@RequestMapping("**/main")
+	@RequestMapping(value="**/main", method=RequestMethod.GET)
 	public ModelAndView getMainPage(){
 		ModelAndView mAndV = new ModelAndView("main");
 		return mAndV;

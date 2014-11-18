@@ -14,7 +14,7 @@ import com.xpanxion.skeleton.service.TestService;
  * @author brian
  * 
  */
-//@Controller
+@Controller
 public class HomeController {
 
     private TestService testService;
@@ -24,7 +24,7 @@ public class HomeController {
      * 
      * @return the Model and View for the home page. 
      */
-    @RequestMapping("**/home")
+    @RequestMapping("/home")
     public ModelAndView getHomePage() {
         ModelAndView mAndV = new ModelAndView("home");
         mAndV.addObject("test", this.testService.getTestBeans());

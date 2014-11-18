@@ -2,6 +2,8 @@ package com.xpanxion.skeleton.dao;
 
 import java.util.List;
 
+import org.hibernate.SessionFactory;
+
 import com.xpanxion.skeleton.dto.entity.UserEntity;
 
 /**
@@ -17,4 +19,11 @@ public interface UserDao {
      * @return all of the User entities. 
      */
     List<UserEntity> getAllItems();
+    
+    /**
+     * Returns the SessionFactory Object for this UserDao
+     * 
+     * @return the SessionFactory Object for this UserDao
+     */
+    public SessionFactory getSessionFactory();
 }

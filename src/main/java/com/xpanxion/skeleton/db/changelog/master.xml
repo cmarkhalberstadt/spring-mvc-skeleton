@@ -7,6 +7,6 @@
 
 	<include file="com/xpanxion/skeleton/db/changelog/create-test-table-with-data.xml"/>
 	<include file="com/xpanxion/skeleton/db/changelog/create-test-table-with-data-oracle.xml"/>
-	<include file="com/xpanxion/skeleton/db/changelog/create-user-name-and-passwords-test-table-with-data.xml"/>
-	
+	<!-- <include file="com/xpanxion/skeleton/db/changelog/create-user-name-and-passwords-test-table-with-data.xml"/>
+	-->
 </databaseChangeLog> 

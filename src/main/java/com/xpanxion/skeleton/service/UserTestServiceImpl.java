@@ -48,5 +48,15 @@ public class UserTestServiceImpl implements UserTestService {
 	public void setUserDao(UserDao dao){
 		this.userDao = dao;
 	}
+	
+	/**
+	 * returns the UserDao object for this service.
+	 * 
+	 * @return the UserDao Object for this service
+	 */
+	@Override
+	public UserDao getUserDao(){
+		return this.userDao;
+	}
 
 }

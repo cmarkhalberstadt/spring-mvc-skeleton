@@ -22,7 +22,7 @@ import com.xpanxion.skeleton.service.UserTestService;
  * @author mhalberstadt
  *
  */
-@Controller
+//@Controller
 public class RESTAPIController {
 	private UserTestService userTestService;
 	
@@ -48,10 +48,12 @@ public class RESTAPIController {
         return mAndV;
     }
 	
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value="**/users", method = RequestMethod.GET)
 	@ResponseBody
-	public ArrayList<UserBean> getAllUsers(){
-		return (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
+	public ModelAndView getUsersPage(){
+		ModelAndView mAndV = new ModelAndView("users");
+		mAndV.addObject("users", this.userTestService.getUserTestBeans());
+		return mAndV;
 	}
 	
 	/**
@@ -59,7 +61,7 @@ public class RESTAPIController {
 	 * @param Username String of the username to be found in the list and have user info returned for
 	 * @return String containing JSON information 
 	 */
-	@RequestMapping(value="**/users", method=RequestMethod.GET)
+	@RequestMapping(value="**/user", method=RequestMethod.GET)
 	@ResponseBody
 	public UserBean getSpecificUserByRequestParam(@RequestParam String Username){
 		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
