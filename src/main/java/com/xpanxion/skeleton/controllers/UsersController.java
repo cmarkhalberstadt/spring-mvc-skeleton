@@ -109,7 +109,12 @@ public class UsersController {
 	}
 	
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
-	public String getChangePasswordPage(@PathVariable String Username){
+	public String getChangePasswordPage(
+			@PathVariable String Username,
+			@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("newPassword") String newPassword,
+			@RequestParam("confirmNewPassword") String confirmNewPassword
+			){
 		System.out.println("Put method called with " + Username + " as Username.");
 		ModelAndView mAndV = new ModelAndView("changePassword");
 		String errorString = "";
