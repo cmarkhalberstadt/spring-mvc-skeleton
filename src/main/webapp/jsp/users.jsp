@@ -16,9 +16,26 @@ div.singleRow {
 positiong:relative;
 }
 
+.errorMessage {
+color:red;
+}
+
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
+
+$(document).ready(function(){
+	var displayChangePasswordErrorMessage = ${displayChangePasswordErrorMessage};
+
+	if (displayChangePasswordErrorMessage){
+		var jQueryDivIDString = "#passwordChangeDiv_" + "${userNameOfLastEditedUserPassword}";
+		//alert(jQueryDivIDString);
+		$(jQueryDivIDString).show();
+		
+	}
+});
+
+
 
 function deleteEntry(user){
 	var URL = "/user/" + user;
@@ -45,13 +62,25 @@ function changePassword(user){
 	var newPasswordID = "newPassword_" + user;
 	var confirmNewPasswordID = "confirmNewPassword_" + user;
 	
-	
+	URL += "?";
+	URL += "oldPassword=";
 	
 	var oldPassword = document.getElementById(oldPasswordID).value;
+	URL += oldPassword;
+	
+	URL += "&newPassword=";
+	
 	var newPassword = document.getElementById(newPasswordID).value;
+	
+	URL += newPassword;
+	
+	URL += "&confirmNewPassword=";
+	
 	var confirmNewPassword = document.getElementById(confirmNewPasswordID).value;
 	
-	alert("put: " + URL);
+	URL += confirmNewPassword;
+	
+	
 	$.ajax({
 	    url: URL,
 	    type: 'PUT',
@@ -62,7 +91,8 @@ function changePassword(user){
 	    },
 	    success: function(result) {
 	        // display fields on window to change password.
-	        
+	    	//location.assign("/users");
+	        location.assign("/users");
 	    }
 	});
 }
@@ -98,7 +128,7 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.userName}')"></td>
 <div id="passwordChangeDiv_${bean.userName}" class="passwordChangeDiv">
 
 <table>
-<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td></tr>
+<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td><td class="errorMessage"></td></tr>
 <tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.userName}" id="newPassword_${bean.userName}" /></td></tr>
 <tr><td>Confirm New Password:</td><td><input type="password" name="confirmNewPassword_${bean.userName}" id="confirmNewPassword_${bean.userName}" /></td></tr>
 <tr><td><input type="button" value="Submit" name="changePasswordSubmit_${bean.userName}" id="changePasswordSubmit_${bean.userName}" onclick="changePassword('${bean.userName}')"/></td></tr>
