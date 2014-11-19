@@ -6,6 +6,10 @@ table.userDataTable {
 border: 5px;
 }
 
+.errorMessage {
+display:none;
+}
+
 div.passwordChangeDiv {
 position:relative;
 display:none;
@@ -31,7 +35,7 @@ $(document).ready(function(){
 		var jQueryDivIDString = "#passwordChangeDiv_" + "${userNameOfLastEditedUserPassword}";
 		//alert(jQueryDivIDString);
 		$(jQueryDivIDString).show();
-		
+		$(".errorMessage").fadeIn(1000);
 	}
 });
 
@@ -128,8 +132,8 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.userName}')"></td>
 <div id="passwordChangeDiv_${bean.userName}" class="passwordChangeDiv">
 
 <table>
-<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td><td class="errorMessage"></td></tr>
-<tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.userName}" id="newPassword_${bean.userName}" /></td></tr>
+<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td><td class="errorMessage">${oldPasswordIncorrectErrorMessage}</td></tr>
+<tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.userName}" id="newPassword_${bean.userName}" /></td><td class="errorMessage">${newPasswordConfirmErrorMessage}</td></tr>
 <tr><td>Confirm New Password:</td><td><input type="password" name="confirmNewPassword_${bean.userName}" id="confirmNewPassword_${bean.userName}" /></td></tr>
 <tr><td><input type="button" value="Submit" name="changePasswordSubmit_${bean.userName}" id="changePasswordSubmit_${bean.userName}" onclick="changePassword('${bean.userName}')"/></td></tr>
 </table>

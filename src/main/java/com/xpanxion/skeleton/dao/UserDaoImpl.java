@@ -76,6 +76,8 @@ public class UserDaoImpl implements UserDao {
 		return retval;
 	}
 	
+	
+	
 	/**
      * Sets the session factory for this dao to use. 
      * 

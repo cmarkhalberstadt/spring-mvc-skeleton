@@ -35,6 +35,7 @@ public class UsersController {
 	private String usernameOfLastEditedUserPassword = "";
 	private boolean wasOldPasswordInputCorrectly = true;
 	private boolean didNewPasswordAndConfirmNewPasswordMatch = true;
+	private boolean displayNewPasswordErrorMessage = false;
 	
 	/**
 	 * Returns the ModelAndView object for the users page
@@ -44,35 +45,28 @@ public class UsersController {
 	public ModelAndView getUsersPage(){
 		ModelAndView mAndV = new ModelAndView("users");
 		mAndV.addObject("users", this.userTestService.getUserTestBeans());
+		mAndV.addObject("displayChangePasswordErrorMessage", "false");
+		mAndV.addObject("userNameOfLastEditedUserPassword", this.usernameOfLastEditedUserPassword);
+		mAndV.addObject("oldPasswordIncorrectErrorMessage", "");
+		mAndV.addObject("newPasswordConfirmErrorMessage", "");
 		
-		
-		// determine what to put into users page for 
-		if (this.usernameOfLastEditedUserPassword != null){
-			if (!this.usernameOfLastEditedUserPassword.isEmpty()){
-				mAndV.addObject("userNameOfLastEditedUserPassword", this.usernameOfLastEditedUserPassword);
-				if (this.wasOldPasswordInputCorrectly){
-					if (this.didNewPasswordAndConfirmNewPasswordMatch){
-						mAndV.addObject("displayChangePasswordErrorMessage", "false");
-						mAndV.addObject("changePasswordErrorString", "");
-					} else {
-						mAndV.addObject("displayChangePasswordErrorMessage", "true");
-						mAndV.addObject("changePasswordErrorString", "Sorry, but the two input new passwords do not match. Please try again.");
-					}
+		if (this.displayNewPasswordErrorMessage){
+			if (this.wasOldPasswordInputCorrectly){
+				if (this.didNewPasswordAndConfirmNewPasswordMatch){
+					mAndV.addObject("displayChangePasswordErrorMessage", "false");
 				} else {
-					// old password not input correctly
 					mAndV.addObject("displayChangePasswordErrorMessage", "true");
-					mAndV.addObject("changePasswordErrorString", "Sorry, but the old password was not input correctly. Please try again.");
+					mAndV.addObject("newPasswordConfirmErrorMessage", "Confirmation does not match.");
 				}
 			} else {
-				mAndV.addObject("displayChangePasswordErrorMessage", "false");
-				mAndV.addObject("changePasswordErrorString", "");
-				
+				mAndV.addObject("displayChangePasswordErrorMessage", "true");
+				mAndV.addObject("oldPasswordIncorrectErrorMessage", "Inncorrect old password.");
 			}
-		} else {
-			mAndV.addObject("displayChangePasswordErrorMessage", "false");
-			mAndV.addObject("changePasswordErrorString", "");
-			//mAndV.addObject("userNameOfLastEditedUserPassword", "");
+			this.usernameOfLastEditedUserPassword = "";
+			this.displayNewPasswordErrorMessage = false;
 		}
+		
+		
 		
 		return mAndV;
 	}
@@ -156,7 +150,8 @@ public class UsersController {
 				// the two new passwords match - CHANGE THE PASSWORD
 				
 				System.out.println("Change the password");
-				
+				this.displayNewPasswordErrorMessage = false;
+				this.usernameOfLastEditedUserPassword = "";
 				tableName = "usernamesandpasswords";
 				
 				SQLQuery = "";
@@ -167,12 +162,12 @@ public class UsersController {
 				this.runSQLQueryWithNoReturnValue(SQLQuery);
 			} else {
 				// the old password is correct, but the new passwords do not match
-				
+				this.displayNewPasswordErrorMessage = true;
 				System.out.println("Two input new passwords do not match.");
 			}
 		} else {
 			// the old password is not correct
-			
+			this.displayNewPasswordErrorMessage = true;
 			System.out.println("The old password is not correct.");
 		}
 		
