@@ -60,7 +60,7 @@ public class UsersController {
 				}
 			} else {
 				mAndV.addObject("displayChangePasswordErrorMessage", "true");
-				mAndV.addObject("oldPasswordIncorrectErrorMessage", "Inncorrect old password.");
+				mAndV.addObject("oldPasswordIncorrectErrorMessage", "Incorrect old password.");
 			}
 			this.usernameOfLastEditedUserPassword = "";
 			this.displayNewPasswordErrorMessage = false;
@@ -84,20 +84,20 @@ public class UsersController {
 		return mAndV;
 	}
 	
-	@RequestMapping(value="/addNewUser", method=RequestMethod.POST)
+	@RequestMapping(value="/user", method=RequestMethod.POST)
 	public ModelAndView addANewUserToTheTableOfUsers(
-			@RequestParam String Username,
-			@RequestParam String Password_1, 
-			@RequestParam String Password_2 
+			@RequestParam String UsernameToAdd,
+			@RequestParam String passwordToAdd, 
+			@RequestParam String confirmPasswordToAdd 
 			){
 		
 		// validate the input user information
-		if (Password_1.equals(Password_2)){
+		if (passwordToAdd.equals(confirmPasswordToAdd)){
 			// add new user to the database
 			String tableName = "usernamesandpasswords";
 			
 			String SQLQuery = "INSERT INTO " + tableName + " (username, password)" + "\n";
-			SQLQuery += "VALUES ('" + Username + "', '" + Password_1 + "');";
+			SQLQuery += "VALUES ('" + UsernameToAdd + "', '" + passwordToAdd + "');";
 			
 			this.runSQLQueryWithNoReturnValue(SQLQuery);
 			return this.getUsersPage();
@@ -232,9 +232,45 @@ public class UsersController {
 		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
 	}
 	
-	
-	
 	private ModelAndView getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(
+			String userName,
+			String Password){
+		ModelAndView mAndV = null;
+		String errorString = null;
+		
+        String tableName = "usernamesandpasswords";
+		
+		String SQLQuery = "SELECT password FROM " + tableName + "\n";
+		SQLQuery += "WHERE username=" + "'" + userName + "'" + ";";
+		
+		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
+		
+		if (list != null){
+			System.out.println("List has: " + list.size() + " entries.");
+			if (list.size() > 0){
+				for (Object o : list){
+					String passwordFromDatabase = o.toString();
+				}
+			} else {
+				errorString = "This user name is not recognized. Please try again.";
+				mAndV = new ModelAndView("usersAuthentication");
+				mAndV.addObject("errorString", errorString);
+				return mAndV;
+			}
+		} else {
+			errorString = "This user name is not recognized. Please try again.";
+			mAndV = new ModelAndView("usersAuthentication");
+			mAndV.addObject("errorString", errorString);
+			return mAndV;
+		}
+		
+		
+	}
+	
+	/*
+	 * OLD METHOD - being depricated
+	 */
+	private ModelAndView getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission_old(
 			String Username,
 			String Password
 			){

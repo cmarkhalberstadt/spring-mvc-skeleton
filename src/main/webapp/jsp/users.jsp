@@ -4,6 +4,7 @@
 <style>
 table.userDataTable {
 border: 5px;
+transition: max-height 0.75s ease-in;
 }
 
 .errorMessage {
@@ -11,9 +12,9 @@ display:none;
 }
 
 div.passwordChangeDiv {
-position:relative;
+position:absolute;
 display:none;
-left: 50px;
+left: 430px;
 }
 
 div.singleRow {
@@ -24,9 +25,15 @@ positiong:relative;
 color:red;
 }
 
+div.addNewUserFieldsDiv {
+display:none;
+}
+
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
+
+var currentlyVisibleUserNameForPasswordChange = "";
 
 $(document).ready(function(){
 	var displayChangePasswordErrorMessage = ${displayChangePasswordErrorMessage};
@@ -103,8 +110,23 @@ function changePassword(user){
 
 function changePasswordClick(userName){
 	var jQueryDivIDString = "#passwordChangeDiv_" + userName;
+	if (currentlyVisibleUserNameForPasswordChange == userName){
+		$('.passwordChangeDiv').fadeOut(300);
+		currentlyVisibleUserNameForPasswordChange = "";
+	} else {
+		$('.passwordChangeDiv').fadeOut(300);
+		$(jQueryDivIDString).fadeIn(1000);
+		currentlyVisibleUserNameForPasswordChange = userName;
+	}
+	
 	//alert(jQueryDivIDString);
-	$(jQueryDivIDString).fadeIn(1000);
+	
+}
+
+function addNewUserButtonClick(){
+	var jQueryDivIDString = "#addNewUserFieldsDiv";
+	//alert(jQueryDivIDString);
+	$(jQueryDivIDString).fadeToggle(1000);
 }
 
 </script>
@@ -130,7 +152,8 @@ function changePasswordClick(userName){
 name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.userName}')"></td>
 <td>
 <div id="passwordChangeDiv_${bean.userName}" class="passwordChangeDiv">
-
+<h3>Username: ${bean.userName}</h3>
+<hr />
 <table>
 <tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td><td class="errorMessage">${oldPasswordIncorrectErrorMessage}</td></tr>
 <tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.userName}" id="newPassword_${bean.userName}" /></td><td class="errorMessage">${newPasswordConfirmErrorMessage}</td></tr>
@@ -149,8 +172,19 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.userName}')"></td>
 </c:forEach>
 </table>
 
-<a href="addNewUserPage">Add New User</a>
-
+<input type="button" value="ADD NEW USER" name="addNewUserButton" id="addNewUserButton" onclick="addNewUserButtonClick()">
+<div name="addNewUserFieldsDiv" id="addNewUserFieldsDiv" class="addNewUserFieldsDiv">
+<h3>Enter New User Name</h3>
+<p class="errorString">${errorString}</p>
+<form action="<c:url value="/user"/>" method="POST">
+<table>
+<tr><td>Username:</td><td><input type="text" name="UsernameToAdd" value="" id="UsernameToAdd"/></td></tr>
+<tr><td>Password:</td><td><input type="password" name="passwordToAdd" id="passwordToAdd" /></td></tr>
+<tr><td>Confirm Password:</td><td><input type="password" name="confirmPasswordToAdd" id="confirmPasswordToAdd" /></td></tr>
+</table>
+<input type="submit" value="Submit" id="Submit" name="Submit"/>
+</form>
+</div>
 
 </body>
 
