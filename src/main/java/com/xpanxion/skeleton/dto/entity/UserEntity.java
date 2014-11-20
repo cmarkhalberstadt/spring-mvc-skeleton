@@ -8,6 +8,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
+
 import org.hibernate.annotations.*;
 
 //@NamedQuery(name = "userNamesAndPasswords.getAll", query = "from UserEntity")
@@ -23,7 +24,7 @@ import org.hibernate.annotations.*;
  */
 @Entity
 @Table(name = "userNamesAndPasswords")
-public class UserEntity {
+public class UserEntity implements Comparable{
 	private long id;
 	private String userName;
 	private String password;
@@ -86,5 +87,27 @@ public class UserEntity {
     public void setPassword(String password){
     	this.password = password;
     }
+
+	@Override
+	public int compareTo(Object o) {
+		if (o != null){
+			UserEntity u = null;
+			try {
+				u = (UserEntity)o;
+			} catch (ClassCastException ex){
+				return 1;
+			}
+			
+			if (this.id > u.getId()){
+				return 1;
+			} else if (this.id == u.getId()){
+				return 0;
+			} else {
+				return -1;
+			}
+		} else {
+			return 1;
+		}
+	}
     
 }

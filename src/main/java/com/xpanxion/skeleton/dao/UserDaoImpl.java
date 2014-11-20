@@ -2,6 +2,7 @@ package com.xpanxion.skeleton.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 import javax.annotation.Resource;
 
@@ -73,6 +74,9 @@ public class UserDaoImpl implements UserDao {
 		} catch (HibernateException ex){
 			System.out.println("Exception thrown while closing session: " + ex);
 		}
+		
+		Collections.sort(retval);
+		
 		return retval;
 	}
 	
