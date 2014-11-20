@@ -7,13 +7,18 @@ border: 5px;
 transition: max-height 0.75s ease-in;
 }
 
-.errorMessage {
+.errorMessage_changePassword {
+display:none;
+}
+
+.errorMessage_addUser {
 display:none;
 }
 
 div.passwordChangeDiv {
 position:absolute;
 display:none;
+width:550px;
 left: 430px;
 }
 
@@ -21,12 +26,17 @@ div.singleRow {
 positiong:relative;
 }
 
-.errorMessage {
+.errorMessage_changePassword {
+color:red;
+}
+
+.errorMessage_addUser {
 color:red;
 }
 
 div.addNewUserFieldsDiv {
 display:none;
+width:550px;
 }
 
 </style>
@@ -36,13 +46,23 @@ display:none;
 var currentlyVisibleUserNameForPasswordChange = "";
 
 $(document).ready(function(){
-	var displayChangePasswordErrorMessage = ${displayChangePasswordErrorMessage};
+	// this is only ever a boolean value
+	var displayChangePasswordErrorMessage_changePassword = ${displayChangePasswordErrorMessage_changePassword};
 
-	if (displayChangePasswordErrorMessage){
-		var jQueryDivIDString = "#passwordChangeDiv_" + "${userNameOfLastEditedUserPassword}";
+	if (displayChangePasswordErrorMessage_changePassword){
+		var jQueryDivIDString = "#passwordChangeDiv_" + "${userNameOfLastEditedUserPassword_changePassword}";
 		//alert(jQueryDivIDString);
 		$(jQueryDivIDString).show();
-		$(".errorMessage").fadeIn(1000);
+		$(".errorMessage_changePassword").fadeIn(1000);
+	}
+	
+	// this is only ever a boolean value
+	var displayAddNewUserErrorMessage_addNewUser = ${displayAddNewUserErrorMessage_addNewUser};
+	
+	if (displayAddNewUserErrorMessage_addNewUser){
+		var jQueryString = "#" + "addNewUserFieldsDiv";
+		$(jQueryString).show();
+		$(".errorMessage_addUser").fadeIn(1000);
 	}
 });
 
@@ -136,7 +156,7 @@ function addNewUserButtonClick(){
 
 <body>
 <h1>Users Page</h1>
-
+<hr />
 
 <table class="userDataTable">
 <tr class="headerRow"><td>ID</td><td>User Name</td><td>Password</td></tr>
@@ -152,15 +172,15 @@ function addNewUserButtonClick(){
 name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.userName}')"></td>
 <td>
 <div id="passwordChangeDiv_${bean.userName}" class="passwordChangeDiv">
-<h3>Username: ${bean.userName}</h3>
 <hr />
+<h3>Username: ${bean.userName}</h3>
 <table>
-<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td><td class="errorMessage">${oldPasswordIncorrectErrorMessage}</td></tr>
-<tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.userName}" id="newPassword_${bean.userName}" /></td><td class="errorMessage">${newPasswordConfirmErrorMessage}</td></tr>
+<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.userName}" id="oldPassword_${bean.userName}" /></td><td class="errorMessage_changePassword">${oldPasswordIncorrectErrorMessage_changePassword}</td></tr>
+<tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.userName}" id="newPassword_${bean.userName}" /></td><td class="errorMessage_changePassword">${newPasswordConfirmErrorMessage_changePassword}</td></tr>
 <tr><td>Confirm New Password:</td><td><input type="password" name="confirmNewPassword_${bean.userName}" id="confirmNewPassword_${bean.userName}" /></td></tr>
 <tr><td><input type="button" value="Submit" name="changePasswordSubmit_${bean.userName}" id="changePasswordSubmit_${bean.userName}" onclick="changePassword('${bean.userName}')"/></td></tr>
 </table>
-
+<hr />
 </div> <!-- End of div wrapper for new password fields -->
 </td>
 
@@ -174,16 +194,17 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.userName}')"></td>
 
 <input type="button" value="ADD NEW USER" name="addNewUserButton" id="addNewUserButton" onclick="addNewUserButtonClick()">
 <div name="addNewUserFieldsDiv" id="addNewUserFieldsDiv" class="addNewUserFieldsDiv">
+<hr />
 <h3>Enter New User Name</h3>
-<p class="errorString">${errorString}</p>
 <form action="<c:url value="/user"/>" method="POST">
 <table>
-<tr><td>Username:</td><td><input type="text" name="UsernameToAdd" value="" id="UsernameToAdd"/></td></tr>
-<tr><td>Password:</td><td><input type="password" name="passwordToAdd" id="passwordToAdd" /></td></tr>
+<tr><td>Username:</td><td><input type="text" name="UsernameToAdd" value="" id="UsernameToAdd"/></td><td class="errorMessage_addUser">${usernameErrorMessage_addUser}</td></tr>
+<tr><td>Password:</td><td><input type="password" name="passwordToAdd" id="passwordToAdd" /></td><td class="errorMessage_addUser">${passwordErrorMessage_addUser}</td ></tr>
 <tr><td>Confirm Password:</td><td><input type="password" name="confirmPasswordToAdd" id="confirmPasswordToAdd" /></td></tr>
 </table>
 <input type="submit" value="Submit" id="Submit" name="Submit"/>
 </form>
+<hr />
 </div>
 
 </body>

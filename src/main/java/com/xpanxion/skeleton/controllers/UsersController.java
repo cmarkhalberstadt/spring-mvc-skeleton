@@ -32,10 +32,17 @@ public class UsersController {
 	
 	private UserTestService userTestService;
 	private String targetPageAfterUserAuthentication = "users";
-	private String usernameOfLastEditedUserPassword = "";
-	private boolean wasOldPasswordInputCorrectly = true;
-	private boolean didNewPasswordAndConfirmNewPasswordMatch = true;
-	private boolean displayNewPasswordErrorMessage = false;
+	
+	// variables used for displaying error messages on changing passwords
+	private String usernameOfLastEditedUserPassword_changePassword = "";
+	private boolean wasOldPasswordInputCorrectly_changePassword = true;
+	private boolean didNewPasswordAndConfirmNewPasswordMatch_changePassword = true;
+	private boolean displayNewPasswordErrorMessage_changePassword = false;
+	
+	// variables used for displaying error messages on adding users
+	private boolean wasInputUserNameADuplicate_addUser = false;
+	private boolean didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
+	private boolean displayErrorMessage_addUser = false;
 	
 	/**
 	 * Returns the ModelAndView object for the users page
@@ -45,29 +52,65 @@ public class UsersController {
 	public ModelAndView getUsersPage(){
 		ModelAndView mAndV = new ModelAndView("users");
 		mAndV.addObject("users", this.userTestService.getUserTestBeans());
-		mAndV.addObject("displayChangePasswordErrorMessage", "false");
-		mAndV.addObject("userNameOfLastEditedUserPassword", this.usernameOfLastEditedUserPassword);
-		mAndV.addObject("oldPasswordIncorrectErrorMessage", "");
-		mAndV.addObject("newPasswordConfirmErrorMessage", "");
 		
-		if (this.displayNewPasswordErrorMessage){
-			if (this.wasOldPasswordInputCorrectly){
-				if (this.didNewPasswordAndConfirmNewPasswordMatch){
-					mAndV.addObject("displayChangePasswordErrorMessage", "false");
-				} else {
-					mAndV.addObject("displayChangePasswordErrorMessage", "true");
-					mAndV.addObject("newPasswordConfirmErrorMessage", "Confirmation does not match.");
-				}
+		mAndV = this.setErrorMessageOnUsersPage_changePassword(mAndV);
+		mAndV = this.setErrorMessageOnUsersPage_addUser(mAndV);
+		
+		return mAndV;
+	}
+	
+	private ModelAndView setErrorMessageOnUsersPage_addUser(ModelAndView mAndV){
+		// set the default values
+		mAndV.addObject("displayAddNewUserErrorMessage_addNewUser", "false");
+		mAndV.addObject("usernameErrorMessage_addUser", "");
+		mAndV.addObject("passwordErrorMessage_addUser", "");
+		
+		// regular logic
+		if (this.displayErrorMessage_addUser){
+			mAndV.addObject("displayAddNewUserErrorMessage_addNewUser", "true");
+			if (this.wasInputUserNameADuplicate_addUser){
+				mAndV.addObject("usernameErrorMessage_addUser", "Username not available.");
+				mAndV.addObject("passwordErrorMessage_addUser", "");
 			} else {
-				mAndV.addObject("displayChangePasswordErrorMessage", "true");
-				mAndV.addObject("oldPasswordIncorrectErrorMessage", "Incorrect old password.");
+				if (this.didNewPasswordAndConfirmNewPasswordMatch_addUser){
+					// if we get to this point, it means that the password field is empty.
+					mAndV.addObject("usernameErrorMessage_addUser", "");
+					mAndV.addObject("passwordErrorMessage_addUser", "Please enter a valid password.");
+				} else {
+					// password and confirm password did not match
+					mAndV.addObject("usernameErrorMessage_addUser", "");
+					mAndV.addObject("passwordErrorMessage_addUser", "Confirmation password did not match.");
+				}
 			}
-			this.usernameOfLastEditedUserPassword = "";
-			this.displayNewPasswordErrorMessage = false;
+			this.displayErrorMessage_addUser = false;
 		}
 		
+		return mAndV;
+	}
+	
+	private ModelAndView setErrorMessageOnUsersPage_changePassword(ModelAndView mAndV){
+		// default values
+		mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "false");
+		mAndV.addObject("userNameOfLastEditedUserPassword_changePassword", this.usernameOfLastEditedUserPassword_changePassword);
+		mAndV.addObject("oldPasswordIncorrectErrorMessage_changePassword", "");
+		mAndV.addObject("newPasswordConfirmErrorMessage_changePassword", "");
 		
-		
+		// regular logic
+		if (this.displayNewPasswordErrorMessage_changePassword){
+			if (this.wasOldPasswordInputCorrectly_changePassword){
+				if (this.didNewPasswordAndConfirmNewPasswordMatch_changePassword){
+					mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "false");
+				} else {
+					mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "true");
+					mAndV.addObject("newPasswordConfirmErrorMessage_changePassword", "Confirmation does not match.");
+				}
+			} else {
+				mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "true");
+				mAndV.addObject("oldPasswordIncorrectErrorMessage_changePassword", "Incorrect old password.");
+			}
+			this.usernameOfLastEditedUserPassword_changePassword = "";
+			this.displayNewPasswordErrorMessage_changePassword = false;
+		}
 		return mAndV;
 	}
 	
@@ -84,15 +127,41 @@ public class UsersController {
 		return mAndV;
 	}
 	
+	/*
+	 * 
+	 * TODO - Utilize a @RequestBody to send data for adding a new user
+	 */
 	@RequestMapping(value="/user", method=RequestMethod.POST)
 	public ModelAndView addANewUserToTheTableOfUsers(
 			@RequestParam String UsernameToAdd,
 			@RequestParam String passwordToAdd, 
 			@RequestParam String confirmPasswordToAdd 
 			){
+		// set the defaults for the error message handling
+		this.displayErrorMessage_addUser = false;
+		this.wasInputUserNameADuplicate_addUser = false;
+		this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
+		
+		
+		String passwordFromDatabaseForDuplicateUserCheck = this.getPasswordForGivenUsernameInDatabase(UsernameToAdd);
+		if (passwordFromDatabaseForDuplicateUserCheck != null){
+			if (!passwordFromDatabaseForDuplicateUserCheck.isEmpty()){
+				this.displayErrorMessage_addUser = true;
+				this.wasInputUserNameADuplicate_addUser = true;
+				this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
+				return this.getUsersPage();
+			}
+		}
 		
 		// validate the input user information
 		if (passwordToAdd.equals(confirmPasswordToAdd)){
+			
+			if (passwordToAdd.isEmpty()){
+				this.displayErrorMessage_addUser = true;
+				this.wasInputUserNameADuplicate_addUser = false;
+				this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
+				return this.getUsersPage();
+			}
 			// add new user to the database
 			String tableName = "usernamesandpasswords";
 			
@@ -102,16 +171,47 @@ public class UsersController {
 			this.runSQLQueryWithNoReturnValue(SQLQuery);
 			return this.getUsersPage();
 		} else {
-			ModelAndView mAndV = new ModelAndView("addNewUserPage");
-			mAndV.addObject("users", this.userTestService.getUserTestBeans());
-			String errorString="Passwords did not match. Please put your information in again.";
-			mAndV.addObject("errorString", errorString);
-			return mAndV;
+			// password input and password confirm did not match
+			this.displayErrorMessage_addUser = true;
+			this.wasInputUserNameADuplicate_addUser = false;
+			this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
+			return this.getUsersPage();
 		}
 		
 		
 	}
 	
+	/**
+	 * Returns the password for a given username as a string or the empty string if the username is not in the database
+	 * @param username - username to retrieve password for
+	 * @return - the password for the given username.
+	 */
+	private String getPasswordForGivenUsernameInDatabase(String username){
+        String tableName = "usernamesandpasswords";
+		String SQLQuery = "SELECT password FROM " + tableName + "\n";
+		SQLQuery += "WHERE username=" + "'" + username + "'" + ";";
+		
+		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
+		
+		if (list == null){
+			return "";
+		}
+		if (list.size() == 0){
+			return "";
+		}
+		
+		for (Object o : list){
+			if (o != null){
+				return o.toString();
+			}
+		}
+		// should never get to this point.
+		return "";
+	}
+	
+	/*
+	 * TODO - utilize the @RequestBody here
+	 */
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
 	public ModelAndView changePasswordForGivenUser(
 			@PathVariable String Username,
@@ -120,41 +220,29 @@ public class UsersController {
 			@RequestParam(value="confirmNewPassword") String confirmNewPassword
 			){
 		
-		this.usernameOfLastEditedUserPassword = Username;
+		this.usernameOfLastEditedUserPassword_changePassword = Username;
 		
-		String oldPasswordFromDatabase = "";
+		String oldPasswordFromDatabase = 
+				this.getPasswordForGivenUsernameInDatabase(Username);
 		
 		/*
 		 * Obtain the current password from the database
 		 */
 		
-		
-		
-		String tableName = "usernamesandpasswords";
-		
-		String SQLQuery = "SELECT password FROM " + tableName + "\n";
-		SQLQuery += "WHERE username=" + "'" + Username + "'" + ";";
-		
-		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
-		
-		for (Object o : list){
-			oldPasswordFromDatabase = o.toString();
-		}
-		
-		this.wasOldPasswordInputCorrectly = oldPasswordFromDatabase.equals(oldPassword);
-		this.didNewPasswordAndConfirmNewPasswordMatch = newPassword.equals(confirmNewPassword);
-		if (this.wasOldPasswordInputCorrectly){
+		this.wasOldPasswordInputCorrectly_changePassword = oldPasswordFromDatabase.equals(oldPassword);
+		this.didNewPasswordAndConfirmNewPasswordMatch_changePassword = newPassword.equals(confirmNewPassword);
+		if (this.wasOldPasswordInputCorrectly_changePassword){
 			// we know the old password is correct
 			System.out.println("Old password is correct");
-			if (this.didNewPasswordAndConfirmNewPasswordMatch){
+			if (this.didNewPasswordAndConfirmNewPasswordMatch_changePassword){
 				// the two new passwords match - CHANGE THE PASSWORD
 				
 				System.out.println("Change the password");
-				this.displayNewPasswordErrorMessage = false;
-				this.usernameOfLastEditedUserPassword = "";
-				tableName = "usernamesandpasswords";
+				this.displayNewPasswordErrorMessage_changePassword = false;
+				this.usernameOfLastEditedUserPassword_changePassword = "";
+				String tableName = "usernamesandpasswords";
 				
-				SQLQuery = "";
+				String SQLQuery = "";
 				
 				SQLQuery = "UPDATE " + tableName + "\n";
 				SQLQuery += "SET password=" + "'" + newPassword + "'" + "\n";
@@ -162,12 +250,12 @@ public class UsersController {
 				this.runSQLQueryWithNoReturnValue(SQLQuery);
 			} else {
 				// the old password is correct, but the new passwords do not match
-				this.displayNewPasswordErrorMessage = true;
+				this.displayNewPasswordErrorMessage_changePassword = true;
 				System.out.println("Two input new passwords do not match.");
 			}
 		} else {
 			// the old password is not correct
-			this.displayNewPasswordErrorMessage = true;
+			this.displayNewPasswordErrorMessage_changePassword = true;
 			System.out.println("The old password is not correct.");
 		}
 		
@@ -232,24 +320,30 @@ public class UsersController {
 		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
 	}
 	
+	
 	private ModelAndView getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(
 			String userName,
 			String Password){
 		ModelAndView mAndV = null;
 		String errorString = null;
 		
-        String tableName = "usernamesandpasswords";
+        String passwordFromDatabase = 
+        		this.getPasswordForGivenUsernameInDatabase(userName);
 		
-		String SQLQuery = "SELECT password FROM " + tableName + "\n";
-		SQLQuery += "WHERE username=" + "'" + userName + "'" + ";";
-		
-		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
-		
-		if (list != null){
-			System.out.println("List has: " + list.size() + " entries.");
-			if (list.size() > 0){
-				for (Object o : list){
-					String passwordFromDatabase = o.toString();
+		if (passwordFromDatabase != null){
+			if (!passwordFromDatabase.isEmpty()){
+				if (passwordFromDatabase.equals(Password)){
+					if (this.targetPageAfterUserAuthentication.equals("users")){
+						return this.getUsersPage();
+					} else {
+						mAndV = new ModelAndView(this.targetPageAfterUserAuthentication);
+						return mAndV;
+					}
+				} else {
+					errorString = "This password does not match the given user name. Please try again.";
+					mAndV = new ModelAndView("usersAuthentication");
+					mAndV.addObject("errorString", errorString);
+					return mAndV;
 				}
 			} else {
 				errorString = "This user name is not recognized. Please try again.";
@@ -266,74 +360,6 @@ public class UsersController {
 		
 		
 	}
-	
-	/*
-	 * OLD METHOD - being depricated
-	 */
-	private ModelAndView getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission_old(
-			String Username,
-			String Password
-			){
-		String errorString = "";
-		ModelAndView mAndV = null;
-		/*
-		 * Test the user name and password here
-		 */
-		int userNameArrayListIndex = this.getUserNameArrayListIndexForGivenUserName(Username);
-		if (userNameArrayListIndex != -1){
-			// this username is in the database
-			if (this.doesPasswordMatchForGivenArrayListIndex(userNameArrayListIndex, Password)){
-				// the user name and password match and we should grant access to the users page
-				if (this.targetPageAfterUserAuthentication.equals("users")){
-					return this.getUsersPage();
-				} else {
-					mAndV = new ModelAndView(this.targetPageAfterUserAuthentication);
-					return mAndV;
-				}
-			} else {
-				// the user name and password do not match
-				errorString = "This password does not match the given user name. Please try again.";
-				mAndV = new ModelAndView("usersAuthentication");
-				mAndV.addObject("errorString", errorString);
-				return mAndV;
-			}
-		} else {
-			// This user name is not in the database
-			errorString = "This user name is not recognized. Please try again.";
-			mAndV = new ModelAndView("usersAuthentication");
-			mAndV.addObject("errorString", errorString);
-			return mAndV;
-		}
-	}
-	
-	/**
-	 * 
-	 * @param username
-	 * @return
-	 */
-	private int getUserNameArrayListIndexForGivenUserName(String username){
-		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
-		int index = 0;
-		for (UserBean b : list){
-			if (username.equals(b.getUserName())){
-				return index;
-			} else {
-				index++;
-			}
-		}
-		// return -1 to signify that the given username was not found
-		return -1;
-	}
-	
-	private boolean doesPasswordMatchForGivenArrayListIndex(int index, String password){
-		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
-		UserBean bean = list.get(index);
-		return password.equals(bean.getPassword());
-	}
-	
-	
-	
-	
 	
 	/**
      * Sets the user test service for this controller
