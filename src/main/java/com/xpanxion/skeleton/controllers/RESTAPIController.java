@@ -3,6 +3,7 @@ package com.xpanxion.skeleton.controllers;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,58 +23,30 @@ import com.xpanxion.skeleton.service.UserTestService;
  * @author mhalberstadt
  *
  */
-//@Controller
+@Controller
 public class RESTAPIController {
 	private UserTestService userTestService;
 	
 	
-	/**
-	 * Controller for the Main page
-	 * 
-	 */
-	@RequestMapping(value="**/main", method=RequestMethod.GET)
-	public ModelAndView getMainPage(){
-		ModelAndView mAndV = new ModelAndView("main");
-		return mAndV;
-	}
-	
-	/**
-     * The default controller action for the homepage. 
-     * 
-     * @return the Model and View for the home page. 
-     */
-    @RequestMapping(value="**/home", method=RequestMethod.GET)
-    public ModelAndView getHomePage() {
-        ModelAndView mAndV = new ModelAndView("home");
-        return mAndV;
-    }
-	
-	@RequestMapping(value="**/users", method = RequestMethod.GET)
-	@ResponseBody
-	public ModelAndView getUsersPage(){
-		ModelAndView mAndV = new ModelAndView("users");
-		mAndV.addObject("users", this.userTestService.getUserTestBeans());
-		return mAndV;
-	}
 	
 	/**
 	 * Returns a specific user's information as a JSON string based on the input username
 	 * @param Username String of the username to be found in the list and have user info returned for
 	 * @return String containing JSON information 
 	 */
-	@RequestMapping(value="**/user", method=RequestMethod.GET)
+	@RequestMapping(value="/api/user", method=RequestMethod.GET)
 	@ResponseBody
-	public UserBean getSpecificUserByRequestParam(@RequestParam String Username){
+	public String getSpecificUserByRequestParam(@RequestParam String Username, HttpServletResponse response){
 		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
 		int numEntries = list.size();
 		for (int i = 0; i<numEntries; i++){
 			UserBean bean = list.get(i);
 			if (bean.getUserName().equals(Username)){
-				return bean;
+				return "Success!";
 			}
 		}
 		// this username is not in the list - return an empty bean
-		return null;
+		return "Not Success!";
 	}
 	
 	
@@ -82,19 +55,19 @@ public class RESTAPIController {
 	 * @param Username String of the username to be found in the list and have user info returned for
 	 * @return String containing JSON information 
 	 */
-	@RequestMapping(method=RequestMethod.GET)
+	@RequestMapping(value = "/api/user/{Username}", method=RequestMethod.GET)
 	@ResponseBody
-	public UserBean getSpecificUserByPathVariable(@PathVariable String Username){
+	public String getSpecificUserByPathVariable(@PathVariable String Username, HttpServletResponse response){
 		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
 		int numEntries = list.size();
 		for (int i = 0; i<numEntries; i++){
 			UserBean bean = list.get(i);
 			if (bean.getUserName().equals(Username)){
-				return bean;
+				return "Success!";
 			}
 		}
 		// this username is not in the list - return the empty string
-		return null;
+		return "Not in list.";
 	}
 	
 	

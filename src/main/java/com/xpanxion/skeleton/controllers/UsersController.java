@@ -1,8 +1,10 @@
 package com.xpanxion.skeleton.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.hibernate.SessionFactory;
 import org.hibernate.Session;
@@ -142,15 +145,11 @@ public class UsersController {
 		this.wasInputUserNameADuplicate_addUser = false;
 		this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
 		
-		
-		String passwordFromDatabaseForDuplicateUserCheck = this.getPasswordForGivenUsernameInDatabase(UsernameToAdd);
-		if (passwordFromDatabaseForDuplicateUserCheck != null){
-			if (!passwordFromDatabaseForDuplicateUserCheck.isEmpty()){
-				this.displayErrorMessage_addUser = true;
-				this.wasInputUserNameADuplicate_addUser = true;
-				this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
-				return this.getUsersPage();
-			}
+		if (this.userTestService.getUserDao().isUsernameInDatabase(UsernameToAdd)){
+			this.displayErrorMessage_addUser = true;
+			this.wasInputUserNameADuplicate_addUser = true;
+			this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
+			return this.getUsersPage();
 		}
 		
 		// validate the input user information
@@ -162,13 +161,8 @@ public class UsersController {
 				this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
 				return this.getUsersPage();
 			}
-			// add new user to the database
-			String tableName = "usernamesandpasswords";
-			
-			String SQLQuery = "INSERT INTO " + tableName + " (username, password)" + "\n";
-			SQLQuery += "VALUES ('" + UsernameToAdd + "', '" + passwordToAdd + "');";
-			
-			this.runSQLQueryWithNoReturnValue(SQLQuery);
+			// add new user to the database 
+			this.userTestService.getUserDao().addUserToDatabase(UsernameToAdd, passwordToAdd);
 			return this.getUsersPage();
 		} else {
 			// password input and password confirm did not match
@@ -181,39 +175,16 @@ public class UsersController {
 		
 	}
 	
-	/**
-	 * Returns the password for a given username as a string or the empty string if the username is not in the database
-	 * @param username - username to retrieve password for
-	 * @return - the password for the given username.
-	 */
-	private String getPasswordForGivenUsernameInDatabase(String username){
-        String tableName = "usernamesandpasswords";
-		String SQLQuery = "SELECT password FROM " + tableName + "\n";
-		SQLQuery += "WHERE username=" + "'" + username + "'" + ";";
-		
-		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
-		
-		if (list == null){
-			return "";
-		}
-		if (list.size() == 0){
-			return "";
-		}
-		
-		for (Object o : list){
-			if (o != null){
-				return o.toString();
-			}
-		}
-		// should never get to this point.
-		return "";
-	}
+	
+	
+	
 	
 	/*
 	 * TODO - utilize the @RequestBody here
 	 */
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
-	public ModelAndView changePasswordForGivenUser(
+	@ResponseBody
+	public String changePasswordForGivenUser(
 			@PathVariable String Username,
 			@RequestParam(value="oldPassword") String oldPassword,
 			@RequestParam(value="newPassword") String newPassword,
@@ -223,7 +194,7 @@ public class UsersController {
 		this.usernameOfLastEditedUserPassword_changePassword = Username;
 		
 		String oldPasswordFromDatabase = 
-				this.getPasswordForGivenUsernameInDatabase(Username);
+				this.userTestService.getUserDao().getUserWithUsername(Username).getPassword();
 		
 		/*
 		 * Obtain the current password from the database
@@ -233,30 +204,24 @@ public class UsersController {
 		this.didNewPasswordAndConfirmNewPasswordMatch_changePassword = newPassword.equals(confirmNewPassword);
 		if (this.wasOldPasswordInputCorrectly_changePassword){
 			// we know the old password is correct
-			System.out.println("Old password is correct");
+			//System.out.println("Old password is correct");
 			if (this.didNewPasswordAndConfirmNewPasswordMatch_changePassword){
 				// the two new passwords match - CHANGE THE PASSWORD
 				
-				System.out.println("Change the password");
+				//System.out.println("Change the password");
 				this.displayNewPasswordErrorMessage_changePassword = false;
 				this.usernameOfLastEditedUserPassword_changePassword = "";
-				String tableName = "usernamesandpasswords";
-				
-				String SQLQuery = "";
-				
-				SQLQuery = "UPDATE " + tableName + "\n";
-				SQLQuery += "SET password=" + "'" + newPassword + "'" + "\n";
-				SQLQuery += "WHERE username=" + "'" + Username + "'" + ";";
-				this.runSQLQueryWithNoReturnValue(SQLQuery);
+				// implement USERS DAO
+				this.userTestService.getUserDao().changePasswordOfUser(Username, newPassword);
 			} else {
 				// the old password is correct, but the new passwords do not match
 				this.displayNewPasswordErrorMessage_changePassword = true;
-				System.out.println("Two input new passwords do not match.");
+				//System.out.println("Two input new passwords do not match.");
 			}
 		} else {
 			// the old password is not correct
 			this.displayNewPasswordErrorMessage_changePassword = true;
-			System.out.println("The old password is not correct.");
+			//System.out.println("The old password is not correct.");
 		}
 		
 		
@@ -264,28 +229,20 @@ public class UsersController {
 		
 		
 		ModelAndView mAndV = new ModelAndView("main");
-		String errorString = "";
+		//String errorString = "";
 		
 		//mAndV.addObject("errorString", errorString);
 		//mAndV.addObject("userName", Username);
-		return mAndV;
-		
+		//return mAndV;
+		return "String response body";
 	}
-	
-	
-	
 	
 	
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.DELETE)
 	public ModelAndView deleteGivenUserFromDataBase(@PathVariable String Username){
 		
 
-		String tableName = "usernamesandpasswords";
-		
-		String SQLQuery = "DELETE FROM " + tableName  + "\n";
-		SQLQuery += "WHERE username='" + Username + "';";
-		
-		this.runSQLQueryWithNoReturnValue(SQLQuery);
+		this.userTestService.getUserDao().deleteUserFromDatabase(Username);
 		return this.getUsersPage();
 	}
 	
@@ -308,8 +265,8 @@ public class UsersController {
 	}
 	
 	
-	// TODO - Fix me - Currently not working
-	//@RequestMapping(value="/user/{Username}", method=RequestMethod.GET)
+	
+	@RequestMapping(value="/user/{Username}", method=RequestMethod.GET)
 	public ModelAndView userNameAndPasswordSubmitWithPathVariable(@PathVariable String Username,@RequestParam("Password") String Password, Model m){
 		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
 	}
@@ -327,38 +284,25 @@ public class UsersController {
 		ModelAndView mAndV = null;
 		String errorString = null;
 		
-        String passwordFromDatabase = 
-        		this.getPasswordForGivenUsernameInDatabase(userName);
-		
-		if (passwordFromDatabase != null){
-			if (!passwordFromDatabase.isEmpty()){
-				if (passwordFromDatabase.equals(Password)){
-					if (this.targetPageAfterUserAuthentication.equals("users")){
-						return this.getUsersPage();
-					} else {
-						mAndV = new ModelAndView(this.targetPageAfterUserAuthentication);
-						return mAndV;
-					}
-				} else {
-					errorString = "This password does not match the given user name. Please try again.";
-					mAndV = new ModelAndView("usersAuthentication");
-					mAndV.addObject("errorString", errorString);
-					return mAndV;
-				}
-			} else {
-				errorString = "This user name is not recognized. Please try again.";
+        if (this.userTestService.getUserDao().isUsernameInDatabase(userName)){
+        	if (this.userTestService.getUserDao().isPasswordCorrectForGivenUsername(userName, Password)){
+        		if (this.targetPageAfterUserAuthentication.equals("users")){
+        			return this.getUsersPage();
+        		}
+        		mAndV = new ModelAndView(this.targetPageAfterUserAuthentication);
+				return mAndV;
+        	} else {
+        		errorString = "This password does not match the given user name. Please try again.";
 				mAndV = new ModelAndView("usersAuthentication");
 				mAndV.addObject("errorString", errorString);
 				return mAndV;
-			}
-		} else {
-			errorString = "This user name is not recognized. Please try again.";
+        	}
+        } else {
+        	errorString = "This user name is not recognized. Please try again.";
 			mAndV = new ModelAndView("usersAuthentication");
 			mAndV.addObject("errorString", errorString);
 			return mAndV;
-		}
-		
-		
+        }
 	}
 	
 	/**
@@ -381,63 +325,8 @@ public class UsersController {
     }
     
     
-    private ArrayList runSQLQueryAndGetReturnList(String SQLQuery){
-    	Session session = this.userTestService.getUserDao().getSessionFactory().openSession();
-		Transaction tx = null;
-		
-		try {
-			tx = session.beginTransaction();
-		} catch (HibernateException ex){
-			System.err.println("Exception thrown when beginning transaction: " + ex);
-		}
-		
-		
-		
-		ArrayList returnValue = (ArrayList) session.createSQLQuery(SQLQuery).list();
-		
-		try {
-			if (tx != null){
-				tx.commit();
-			}
-		} catch (HibernateException ex){
-			System.err.println("Exception thrown when committing transaction: " + ex);
-			if (tx != null){
-				tx.rollback();
-			}
-		} finally {
-			session.close();
-		}
-		return returnValue;
-    }
     
-    private int runSQLQueryWithNoReturnValue(String SQLQuery){
-    	Session session = this.userTestService.getUserDao().getSessionFactory().openSession();
-		Transaction tx = null;
-		
-		try {
-			tx = session.beginTransaction();
-		} catch (HibernateException ex){
-			System.err.println("Exception thrown when beginning transaction: " + ex);
-		}
-		
-		
-		
-		int returnValue = session.createSQLQuery(SQLQuery).executeUpdate();
-		
-		try {
-			if (tx != null){
-				tx.commit();
-			}
-		} catch (HibernateException ex){
-			System.err.println("Exception thrown when committing transaction: " + ex);
-			if (tx != null){
-				tx.rollback();
-			}
-		} finally {
-			session.close();
-		}
-		return returnValue;
-    }
+    
 	
 	
 }

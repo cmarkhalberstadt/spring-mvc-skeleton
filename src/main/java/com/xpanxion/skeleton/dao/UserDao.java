@@ -26,4 +26,11 @@ public interface UserDao {
      * @return the SessionFactory Object for this UserDao
      */
     public SessionFactory getSessionFactory();
+    
+    public UserEntity getUserWithUsername(String Username);
+    public void changePasswordOfUser(String Username, String newPassword);
+    public void addUserToDatabase(String Username, String Password);
+    public void deleteUserFromDatabase(String Username);
+    public boolean isUsernameInDatabase(String Username);
+    public boolean isPasswordCorrectForGivenUsername(String Username, String Password);
 }

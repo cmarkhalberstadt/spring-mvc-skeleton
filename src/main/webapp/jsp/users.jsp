@@ -112,6 +112,7 @@ function changePassword(user){
 	URL += confirmNewPassword;
 	
 	
+	
 	$.ajax({
 	    url: URL,
 	    type: 'PUT',
@@ -123,6 +124,7 @@ function changePassword(user){
 	    success: function(result) {
 	        // display fields on window to change password.
 	    	//location.assign("/users");
+	        //alert(result);
 	        location.assign("/users");
 	    }
 	});

@@ -10,6 +10,16 @@ import javax.annotation.Resource;
 
 
 
+
+
+
+
+
+
+
+
+
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,6 +30,8 @@ import org.hibernate.Transaction;
 
 import org.hibernate.cfg.Configuration;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.xpanxion.skeleton.dto.entity.UserEntity;
 
@@ -81,6 +93,122 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	
+	private ArrayList runSQLQueryAndGetReturnList(String SQLQuery){
+    	Session session = this.sessionFactory.openSession();
+		Transaction tx = null;
+		
+		try {
+			tx = session.beginTransaction();
+		} catch (HibernateException ex){
+			System.err.println("Exception thrown when beginning transaction: " + ex);
+		}
+		
+		
+		
+		ArrayList returnValue = (ArrayList) session.createSQLQuery(SQLQuery).list();
+		
+		try {
+			if (tx != null){
+				tx.commit();
+			}
+		} catch (HibernateException ex){
+			System.err.println("Exception thrown when committing transaction: " + ex);
+			if (tx != null){
+				tx.rollback();
+			}
+		} finally {
+			session.close();
+		}
+		return returnValue;
+    }
+    
+    private int runSQLQueryWithNoReturnValue(String SQLQuery){
+    	Session session = this.sessionFactory.openSession();
+		Transaction tx = null;
+		
+		try {
+			tx = session.beginTransaction();
+		} catch (HibernateException ex){
+			System.err.println("Exception thrown when beginning transaction: " + ex);
+		}
+		
+		
+		
+		int returnValue = session.createSQLQuery(SQLQuery).executeUpdate();
+		
+		try {
+			if (tx != null){
+				tx.commit();
+			}
+		} catch (HibernateException ex){
+			System.err.println("Exception thrown when committing transaction: " + ex);
+			if (tx != null){
+				tx.rollback();
+			}
+		} finally {
+			session.close();
+		}
+		return returnValue;
+    }
+    
+    private long getIDForGivenUsernameInDatabase(String username){
+    	String tableName = "usernamesandpasswords";
+		String SQLQuery = "SELECT id FROM " + tableName + "\n";
+		SQLQuery += "WHERE username=" + "'" + username + "'" + ";";
+		
+		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
+		
+		if (list == null){
+			return -1;
+		}
+		if (list.size() == 0){
+			return -1;
+		}
+		
+		for (Object o : list){
+			if (o != null){
+				Integer i = (Integer)o;
+				return i.longValue();
+			}
+		}
+		// should never get to this point.
+		return -1;
+    }
+    
+    private String getPasswordForGivenUsernameInDatabase(String username){
+        String tableName = "usernamesandpasswords";
+		String SQLQuery = "SELECT password FROM " + tableName + "\n";
+		SQLQuery += "WHERE username=" + "'" + username + "'" + ";";
+		
+		ArrayList list = this.runSQLQueryAndGetReturnList(SQLQuery);
+		
+		if (list == null){
+			return "";
+		}
+		if (list.size() == 0){
+			return "";
+		}
+		
+		for (Object o : list){
+			if (o != null){
+				return o.toString();
+			}
+		}
+		// should never get to this point.
+		return "";
+	}
+    
+    public void deleteGivenUserFromDataBase(String Username){
+		String tableName = "usernamesandpasswords";
+		
+		String SQLQuery = "DELETE FROM " + tableName  + "\n";
+		SQLQuery += "WHERE username='" + Username + "';";
+		
+		this.runSQLQueryWithNoReturnValue(SQLQuery);
+		
+	}
+	
+	
 	
 	/**
      * Sets the session factory for this dao to use. 
@@ -100,5 +228,83 @@ public class UserDaoImpl implements UserDao {
     public SessionFactory getSessionFactory(){
     	return this.sessionFactory;
     }
+
+
+	@Override
+	public UserEntity getUserWithUsername(String Username) {
+		String password = this.getPasswordForGivenUsernameInDatabase(Username);
+		if (password == null){
+			return null;
+		}
+		if (password.isEmpty()){
+			return null;
+		}
+		// else
+		UserEntity retval = new UserEntity();
+		retval.setPassword(password);
+		retval.setUserName(Username);
+		retval.setId(this.getIDForGivenUsernameInDatabase(Username));
+		return retval;
+	}
+
+
+	@Override
+	public void changePasswordOfUser(String Username, String newPassword) {
+		String tableName = "usernamesandpasswords";
+		
+		String SQLQuery = "";
+		
+		SQLQuery = "UPDATE " + tableName + "\n";
+		SQLQuery += "SET password=" + "'" + newPassword + "'" + "\n";
+		SQLQuery += "WHERE username=" + "'" + Username + "'" + ";";
+		this.runSQLQueryWithNoReturnValue(SQLQuery);
+	}
+
+
+	@Override
+	public void addUserToDatabase(String Username, String Password) {
+		String tableName = "usernamesandpasswords";
+		
+		String SQLQuery = "INSERT INTO " + tableName + " (username, password)" + "\n";
+		SQLQuery += "VALUES ('" + Username + "', '" + Password + "');";
+		
+		this.runSQLQueryWithNoReturnValue(SQLQuery);
+	}
+
+
+	@Override
+	public void deleteUserFromDatabase(String Username) {
+		this.deleteGivenUserFromDataBase(Username);
+	}
+
+
+	@Override
+	public boolean isUsernameInDatabase(String Username) {
+		String toCheck = this.getPasswordForGivenUsernameInDatabase(Username);
+		if (toCheck == null){
+			return false;
+		}
+		if (toCheck.isEmpty()){
+			return false;
+		}
+		// else
+		return true;
+	}
+
+
+	@Override
+	public boolean isPasswordCorrectForGivenUsername(String Username,
+			String Password) {
+		if (this.isUsernameInDatabase(Username)){
+			UserEntity u = this.getUserWithUsername(Username);
+			if (Password.equals(u.getPassword())){
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 
 }
