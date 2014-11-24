@@ -234,7 +234,7 @@ public class UsersController {
 		//mAndV.addObject("errorString", errorString);
 		//mAndV.addObject("userName", Username);
 		//return mAndV;
-		return "String response body";
+		return "{\"name\":\"testName\", \"password\":\"testPassword\"}";
 	}
 	
 	

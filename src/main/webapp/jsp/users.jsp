@@ -124,6 +124,8 @@ function changePassword(user){
 	    success: function(result) {
 	        // display fields on window to change password.
 	    	//location.assign("/users");
+	        var resultObject = jQuery.parseJSON(result);
+	        //alert(resultObject.name);
 	        //alert(result);
 	        location.assign("/users");
 	    }
