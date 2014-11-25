@@ -22,7 +22,7 @@ import org.hibernate.HibernateException;
 
 import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.dto.entity.UserEntity;
-import com.xpanxion.skeleton.service.UserTestService;
+import com.xpanxion.skeleton.service.UserService;
 
 /**
  * Controller for the Users page
@@ -33,7 +33,7 @@ import com.xpanxion.skeleton.service.UserTestService;
 @Controller
 public class UsersController {
 	
-	private UserTestService userTestService;
+	private UserService userTestService;
 	private String targetPageAfterUserAuthentication = "users";
 	
 	// variables used for displaying error messages on changing passwords
@@ -145,6 +145,7 @@ public class UsersController {
 		this.wasInputUserNameADuplicate_addUser = false;
 		this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
 		
+		// check to see if username is already in database
 		if (this.userTestService.getUserDao().isUsernameInDatabase(UsernameToAdd)){
 			this.displayErrorMessage_addUser = true;
 			this.wasInputUserNameADuplicate_addUser = true;
@@ -311,7 +312,7 @@ public class UsersController {
      * @param service the  user test service to use in this controller. 
      */
     @Resource
-    public void setUserTestService(UserTestService service){
+    public void setUserTestService(UserService service){
     	this.userTestService = service;
     }
     
@@ -320,7 +321,7 @@ public class UsersController {
      * 
      * @return Returns the User Test Service
      */
-    public UserTestService getUserTestService(){
+    public UserService getUserTestService(){
     	return this.userTestService;
     }
     

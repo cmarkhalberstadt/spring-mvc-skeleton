@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.xpanxion.skeleton.dto.beans.UserBean;
-import com.xpanxion.skeleton.service.UserTestService;
+import com.xpanxion.skeleton.service.UserService;
 
 /**
  * RESTFul Webservice Controller
@@ -25,7 +25,7 @@ import com.xpanxion.skeleton.service.UserTestService;
  */
 @Controller
 public class RESTAPIController {
-	private UserTestService userTestService;
+	private UserService userTestService;
 	
 	
 	
@@ -112,7 +112,7 @@ public class RESTAPIController {
      * @param service the  user test service to use in this controller. 
      */
     @Resource
-    public void setUserTestService(UserTestService service){
+    public void setUserTestService(UserService service){
     	this.userTestService = service;
     }
     
@@ -121,7 +121,7 @@ public class RESTAPIController {
      * 
      * @return Returns the User Test Service
      */
-    public UserTestService getUserTestService(){
+    public UserService getUserTestService(){
     	return this.userTestService;
     }
 	

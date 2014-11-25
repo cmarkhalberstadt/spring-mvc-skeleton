@@ -14,7 +14,7 @@ import com.xpanxion.skeleton.dto.beans.UserBean;
  *
  */
 
-public interface UserTestService {
+public interface UserService {
 	/**
      * Return all of the available user test beans. 
      * 

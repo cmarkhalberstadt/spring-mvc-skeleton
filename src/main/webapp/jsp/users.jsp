@@ -41,6 +41,8 @@ width:550px;
 
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/resources/js/users.js" type="text/javascript"></script>
+<!--  
 <script type="text/javascript">
 
 var currentlyVisibleUserNameForPasswordChange = "";
@@ -153,7 +155,7 @@ function addNewUserButtonClick(){
 	$(jQueryDivIDString).fadeToggle(1000);
 }
 
-</script>
+</script> -->
 
 <title>Users</title>
 </head>

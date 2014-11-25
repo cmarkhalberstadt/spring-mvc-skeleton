@@ -21,7 +21,7 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
  */
 @Transactional
 @Service
-public class UserTestServiceImpl implements UserTestService {
+public class UserServiceImpl implements UserService {
 	
 	private UserDao userDao;
 
