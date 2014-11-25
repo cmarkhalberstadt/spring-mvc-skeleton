@@ -227,7 +227,7 @@ public class UsersRESTDaoImpl {
 		// else
 		UserEntity retval = new UserEntity();
 		retval.setPassword(password);
-		retval.setUserName(Username);
+		retval.setUsername(Username);
 		retval.setId(this.getIDForGivenUsernameInDatabase(Username));
 		return retval;
 	}

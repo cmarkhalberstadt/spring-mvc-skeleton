@@ -1,6 +1,7 @@
 package com.xpanxion.skeleton.controllers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -9,14 +10,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.xpanxion.skeleton.dto.beans.ChangeUserPasswordBean;
+import com.xpanxion.skeleton.dto.beans.TestBean;
 import com.xpanxion.skeleton.dto.beans.UserBean;
+import com.xpanxion.skeleton.dto.entity.UserEntity;
 import com.xpanxion.skeleton.service.UserService;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
  * RESTFul Webservice Controller
@@ -25,28 +39,17 @@ import com.xpanxion.skeleton.service.UserService;
  */
 @Controller
 public class RESTAPIController {
-	private UserService userTestService;
-	
+	private UserService userService;
 	
 	
 	/**
-	 * Returns a specific user's information as a JSON string based on the input username
-	 * @param Username String of the username to be found in the list and have user info returned for
-	 * @return String containing JSON information 
+	 * Returns a list of user beans as a JSON object
+	 * @return
 	 */
-	@RequestMapping(value="/api/user", method=RequestMethod.GET)
+	@RequestMapping(value="/api/users", method=RequestMethod.GET)
 	@ResponseBody
-	public String getSpecificUserByRequestParam(@RequestParam String Username, HttpServletResponse response){
-		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
-		int numEntries = list.size();
-		for (int i = 0; i<numEntries; i++){
-			UserBean bean = list.get(i);
-			if (bean.getUserName().equals(Username)){
-				return "Success!";
-			}
-		}
-		// this username is not in the list - return an empty bean
-		return "Not Success!";
+	public List<UserBean> getAllUsers_ReturnAsJSONResponseBody(){
+		return this.userService.getUserBeans();
 	}
 	
 	
@@ -57,54 +60,69 @@ public class RESTAPIController {
 	 */
 	@RequestMapping(value = "/api/user/{Username}", method=RequestMethod.GET)
 	@ResponseBody
-	public String getSpecificUserByPathVariable(@PathVariable String Username, HttpServletResponse response){
-		ArrayList<UserBean> list = (ArrayList<UserBean>)this.userTestService.getUserTestBeans();
-		int numEntries = list.size();
-		for (int i = 0; i<numEntries; i++){
-			UserBean bean = list.get(i);
-			if (bean.getUserName().equals(Username)){
-				return "Success!";
-			}
-		}
-		// this username is not in the list - return the empty string
-		return "Not in list.";
+	public UserBean getSpecificUserByPathVariable(@PathVariable String Username, HttpServletResponse response){
+		return this.userService.getUserWithUsername(Username);
 	}
 	
 	
 	
 	/**
-	 * Converts a UserBean Object into JSON output as a String
-	 * @param userBean UserBean Object to be converted
-	 * @return A String containing JSON for the given UserBean input
+	 * Returns a specific user's information as a JSON string based on the input username
+	 * @param Username String of the username to be found in the list and have user info returned for
+	 * @return String containing JSON information 
 	 */
-	private String convertUserBeanToJSON(UserBean userBean){
-		String retval = "{" + "\n";
-		
-		retval += "    ";
-		retval += "\"id\":";
-		retval += "" + userBean.getId() + "";
-		retval += ",";
-		retval += "\n";
-		
-		retval += "    ";
-		retval += "\"userName\":";
-		retval += "\"";
-		retval += "" + userBean.getUserName() + "";
-		retval += "\"";
-		retval += ",";
-		retval += "\n";
-		
-		retval += "    ";
-		retval += "\"password\":";
-		retval += "\"";
-		retval += "" + userBean.getPassword() + "";
-		retval += "\"";
-		retval += "\n";
-		
-		retval += "}";
-		
-		return retval;
+	@RequestMapping(value="/api/user", method=RequestMethod.GET, produces="application/json")
+	@ResponseBody
+	public UserBean getSpecificUserByRequestParam(@RequestParam String Username, HttpServletResponse response){
+		return this.userService.getUserWithUsername(Username);
 	}
+	
+	/*
+	 * Working
+	 */
+	@RequestMapping(value="/api/user/{Username}", method=RequestMethod.DELETE, produces="application/json")
+	@ResponseBody
+	public void deleteGivenUser(@PathVariable String Username){
+		this.userService.deleteUserFromDatabase(Username);
+	}
+	
+	/*
+	 * Working
+	 */
+	@RequestMapping(value="/api/user/{Username}", method=RequestMethod.PUT, produces="application/json")
+	@ResponseBody
+	public UserBean changePasswordForGivenUser(@PathVariable String Username, @RequestBody ChangeUserPasswordBean changeUserPasswordBean){
+		UserBean fromDatabase = this.userService.getUserWithUsername(Username);
+		if (fromDatabase.getPassword().equals(changeUserPasswordBean.getOldpassword())){
+			// old password matches the password stored in the database
+			this.userService.changePasswordOfUser(Username, changeUserPasswordBean.getNewpassword());
+			return this.userService.getUserWithUsername(Username);
+		} else {
+			return null;
+		}
+	}
+	
+	
+	/*
+	 * Working
+	 */
+	@RequestMapping(value= "/api/user", method=RequestMethod.POST, produces="application/json", consumes="application/json")
+	public @ResponseBody UserBean addAUserToTheDatabase(@RequestBody UserBean request){
+		UserBean checkFromDatabase = this.userService.getUserWithUsername(request.getUsername());
+		if (checkFromDatabase != null){
+			if (!checkFromDatabase.getUsername().isEmpty()){
+				if (checkFromDatabase.getUsername().equals(request.getUsername())){
+					return null;
+				}
+			}
+		}
+		this.userService.addUserToDatabase(request.getUsername(), request.getPassword());
+		return this.userService.getUserWithUsername(request.getUsername());
+	}
+	
+	
+	
+	
 	
 	/**
      * Sets the user test service for this controller
@@ -113,7 +131,7 @@ public class RESTAPIController {
      */
     @Resource
     public void setUserTestService(UserService service){
-    	this.userTestService = service;
+    	this.userService = service;
     }
     
     /**
@@ -122,7 +140,7 @@ public class RESTAPIController {
      * @return Returns the User Test Service
      */
     public UserService getUserTestService(){
-    	return this.userTestService;
+    	return this.userService;
     }
 	
 	

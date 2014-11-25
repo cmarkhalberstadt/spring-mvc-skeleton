@@ -41,7 +41,7 @@ width:550px;
 
 </style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="/resources/js/users.js" type="text/javascript"></script>
+<script src="<c:url value="../resources/webtheme/js/users.js" />" type="text/javascript"></script>
 <!--  
 <script type="text/javascript">
 

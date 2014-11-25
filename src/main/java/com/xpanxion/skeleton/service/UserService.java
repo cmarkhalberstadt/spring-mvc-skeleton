@@ -4,8 +4,10 @@ import java.util.List;
 
 
 
+
 import com.xpanxion.skeleton.dao.UserDao;
 import com.xpanxion.skeleton.dto.beans.UserBean;
+import com.xpanxion.skeleton.dto.entity.UserEntity;
 
 /**
  * A service dealing with User Test Beans
@@ -20,12 +22,12 @@ public interface UserService {
      * 
      * @return all of the user test beans
      */
-    List<UserBean> getUserTestBeans();
+    List<UserBean> getUserBeans();
     
-    /**
-     * Return the UserDao Object for this service
-     * 
-     * @return the UserDao Object for this service
-     */
-    public UserDao getUserDao();
+    public UserBean getUserWithUsername(String Username);
+    public void changePasswordOfUser(String Username, String newPassword);
+    public void addUserToDatabase(String Username, String Password);
+    public void deleteUserFromDatabase(String Username);
+    public boolean isUsernameInDatabase(String Username);
+    public boolean isPasswordCorrectForGivenUsername(String Username, String Password);
 }

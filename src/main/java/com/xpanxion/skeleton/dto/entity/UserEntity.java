@@ -1,11 +1,17 @@
 package com.xpanxion.skeleton.dto.entity;
 
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 
@@ -24,10 +30,12 @@ import org.hibernate.annotations.*;
  */
 @Entity
 @Table(name = "userNamesAndPasswords")
-public class UserEntity implements Comparable{
+public class UserEntity implements Comparable, Serializable{
 	private long id;
-	private String userName;
+	private String username;
 	private String password;
+	
+	
 	
 	/**
      * Returns the Id of the entity.  This is the primary key. 
@@ -46,8 +54,8 @@ public class UserEntity implements Comparable{
      * @return the user name text field. 
      */
     @Column(name="username")
-    public String getUserName() {
-        return this.userName;
+    public String getUsername() {
+        return this.username;
     }
     
     /**
@@ -75,8 +83,8 @@ public class UserEntity implements Comparable{
      * 
      * @param userName the user name to set
      */
-    public void setUserName(String userName){
-    	this.userName = userName;
+    public void setUsername(String username){
+    	this.username = username;
     }
     
     /**
@@ -109,5 +117,4 @@ public class UserEntity implements Comparable{
 			return 1;
 		}
 	}
-    
 }

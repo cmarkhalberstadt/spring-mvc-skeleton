@@ -1,9 +1,13 @@
 package com.xpanxion.skeleton.dto.beans;
 
-public class UserBean {
+
+
+public class UserBean{
 	private long id;
-	private String userName;
+	private String username;
 	private String password;
+	
+	public UserBean(){}
 	
 	/**
      * Sets the id of this bean
@@ -11,7 +15,7 @@ public class UserBean {
      * @param id
      *            the id to set
      */
-	public void setID(long id){
+	public void setId(long id){
 		this.id = id;
 	}
 	
@@ -29,8 +33,8 @@ public class UserBean {
 	 * 
 	 * @param userName the username to set
 	 */
-	public void setUserName(String userName){
-		this.userName = userName;
+	public void setUsername(String username){
+		this.username = username;
 	}
 	
 	/**
@@ -38,8 +42,8 @@ public class UserBean {
 	 * 
 	 * @return the user name of this bean
 	 */
-	public String getUserName(){
-		return this.userName;
+	public String getUsername(){
+		return this.username;
 	}
 	
 	/**

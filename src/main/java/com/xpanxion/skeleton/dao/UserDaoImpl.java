@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 
 
 
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.dto.entity.UserEntity;
 
 /**
@@ -231,7 +233,7 @@ public class UserDaoImpl implements UserDao {
 
 
 	@Override
-	public UserEntity getUserWithUsername(String Username) {
+	public UserBean getUserWithUsername(String Username) {
 		String password = this.getPasswordForGivenUsernameInDatabase(Username);
 		if (password == null){
 			return null;
@@ -240,9 +242,9 @@ public class UserDaoImpl implements UserDao {
 			return null;
 		}
 		// else
-		UserEntity retval = new UserEntity();
+		UserBean retval = new UserBean();
 		retval.setPassword(password);
-		retval.setUserName(Username);
+		retval.setUsername(Username);
 		retval.setId(this.getIDForGivenUsernameInDatabase(Username));
 		return retval;
 	}
@@ -296,7 +298,7 @@ public class UserDaoImpl implements UserDao {
 	public boolean isPasswordCorrectForGivenUsername(String Username,
 			String Password) {
 		if (this.isUsernameInDatabase(Username)){
-			UserEntity u = this.getUserWithUsername(Username);
+			UserBean u = this.getUserWithUsername(Username);
 			if (Password.equals(u.getPassword())){
 				return true;
 			} else {

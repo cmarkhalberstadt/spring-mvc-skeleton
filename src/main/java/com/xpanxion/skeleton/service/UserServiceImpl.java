@@ -26,13 +26,13 @@ public class UserServiceImpl implements UserService {
 	private UserDao userDao;
 
 	@Override
-	public List<UserBean> getUserTestBeans() {
+	public List<UserBean> getUserBeans() {
 		List<UserEntity> userItems = this.userDao.getAllItems();
 		List<UserBean> output = new ArrayList<UserBean>();
 		for (UserEntity user : userItems){
 			UserBean bean = new UserBean();
-			bean.setID(user.getId());
-			bean.setUserName(user.getUserName());
+			bean.setId(user.getId());
+			bean.setUsername(user.getUsername());
 			bean.setPassword(user.getPassword());
 			output.add(bean);
 		}
@@ -48,15 +48,39 @@ public class UserServiceImpl implements UserService {
 	public void setUserDao(UserDao dao){
 		this.userDao = dao;
 	}
-	
-	/**
-	 * returns the UserDao object for this service.
-	 * 
-	 * @return the UserDao Object for this service
-	 */
+
 	@Override
-	public UserDao getUserDao(){
-		return this.userDao;
+	public UserBean getUserWithUsername(String Username) {
+		return this.userDao.getUserWithUsername(Username);
 	}
+
+	@Override
+	public void changePasswordOfUser(String Username, String newPassword) {
+		this.userDao.changePasswordOfUser(Username, newPassword);
+	}
+
+	@Override
+	public void addUserToDatabase(String Username, String Password) {
+		this.userDao.addUserToDatabase(Username, Password);
+	}
+
+	@Override
+	public void deleteUserFromDatabase(String Username) {
+		this.userDao.deleteUserFromDatabase(Username);
+	}
+
+	@Override
+	public boolean isUsernameInDatabase(String Username) {
+		return this.userDao.isUsernameInDatabase(Username);
+	}
+
+	@Override
+	public boolean isPasswordCorrectForGivenUsername(String Username,
+			String Password) {
+		return this.userDao.isPasswordCorrectForGivenUsername(Username, Password);
+	}
+	
+	
+	
 
 }

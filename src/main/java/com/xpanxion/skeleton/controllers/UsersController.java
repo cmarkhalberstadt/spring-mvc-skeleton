@@ -33,7 +33,7 @@ import com.xpanxion.skeleton.service.UserService;
 @Controller
 public class UsersController {
 	
-	private UserService userTestService;
+	private UserService userService;
 	private String targetPageAfterUserAuthentication = "users";
 	
 	// variables used for displaying error messages on changing passwords
@@ -54,7 +54,7 @@ public class UsersController {
 	@RequestMapping(value="/users", method=RequestMethod.GET)
 	public ModelAndView getUsersPage(){
 		ModelAndView mAndV = new ModelAndView("users");
-		mAndV.addObject("users", this.userTestService.getUserTestBeans());
+		mAndV.addObject("users", this.userService.getUserBeans());
 		
 		mAndV = this.setErrorMessageOnUsersPage_changePassword(mAndV);
 		mAndV = this.setErrorMessageOnUsersPage_addUser(mAndV);
@@ -124,7 +124,7 @@ public class UsersController {
 	@RequestMapping(value="/addNewUserPage", method=RequestMethod.GET)
 	public ModelAndView getNewUserPage(){
 		ModelAndView mAndV = new ModelAndView("addNewUserPage");
-		mAndV.addObject("users", this.userTestService.getUserTestBeans());
+		mAndV.addObject("users", this.userService.getUserBeans());
 		String errorString="";
 		mAndV.addObject("errorString", errorString);
 		return mAndV;
@@ -146,7 +146,7 @@ public class UsersController {
 		this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
 		
 		// check to see if username is already in database
-		if (this.userTestService.getUserDao().isUsernameInDatabase(UsernameToAdd)){
+		if (this.userService.isUsernameInDatabase(UsernameToAdd)){
 			this.displayErrorMessage_addUser = true;
 			this.wasInputUserNameADuplicate_addUser = true;
 			this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
@@ -163,7 +163,7 @@ public class UsersController {
 				return this.getUsersPage();
 			}
 			// add new user to the database 
-			this.userTestService.getUserDao().addUserToDatabase(UsernameToAdd, passwordToAdd);
+			this.userService.addUserToDatabase(UsernameToAdd, passwordToAdd);
 			return this.getUsersPage();
 		} else {
 			// password input and password confirm did not match
@@ -195,7 +195,7 @@ public class UsersController {
 		this.usernameOfLastEditedUserPassword_changePassword = Username;
 		
 		String oldPasswordFromDatabase = 
-				this.userTestService.getUserDao().getUserWithUsername(Username).getPassword();
+				this.userService.getUserWithUsername(Username).getPassword();
 		
 		/*
 		 * Obtain the current password from the database
@@ -213,7 +213,7 @@ public class UsersController {
 				this.displayNewPasswordErrorMessage_changePassword = false;
 				this.usernameOfLastEditedUserPassword_changePassword = "";
 				// implement USERS DAO
-				this.userTestService.getUserDao().changePasswordOfUser(Username, newPassword);
+				this.userService.changePasswordOfUser(Username, newPassword);
 			} else {
 				// the old password is correct, but the new passwords do not match
 				this.displayNewPasswordErrorMessage_changePassword = true;
@@ -243,7 +243,7 @@ public class UsersController {
 	public ModelAndView deleteGivenUserFromDataBase(@PathVariable String Username){
 		
 
-		this.userTestService.getUserDao().deleteUserFromDatabase(Username);
+		this.userService.deleteUserFromDatabase(Username);
 		return this.getUsersPage();
 	}
 	
@@ -285,8 +285,8 @@ public class UsersController {
 		ModelAndView mAndV = null;
 		String errorString = null;
 		
-        if (this.userTestService.getUserDao().isUsernameInDatabase(userName)){
-        	if (this.userTestService.getUserDao().isPasswordCorrectForGivenUsername(userName, Password)){
+        if (this.userService.isUsernameInDatabase(userName)){
+        	if (this.userService.isPasswordCorrectForGivenUsername(userName, Password)){
         		if (this.targetPageAfterUserAuthentication.equals("users")){
         			return this.getUsersPage();
         		}
@@ -312,8 +312,8 @@ public class UsersController {
      * @param service the  user test service to use in this controller. 
      */
     @Resource
-    public void setUserTestService(UserService service){
-    	this.userTestService = service;
+    public void setUserService(UserService service){
+    	this.userService = service;
     }
     
     /**
@@ -321,8 +321,8 @@ public class UsersController {
      * 
      * @return Returns the User Test Service
      */
-    public UserService getUserTestService(){
-    	return this.userTestService;
+    public UserService getUserService(){
+    	return this.userService;
     }
     
     
