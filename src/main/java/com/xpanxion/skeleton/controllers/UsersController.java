@@ -130,10 +130,6 @@ public class UsersController {
 		return mAndV;
 	}
 	
-	/*
-	 * 
-	 * TODO - Utilize a @RequestBody to send data for adding a new user
-	 */
 	@RequestMapping(value="/user", method=RequestMethod.POST)
 	public ModelAndView addANewUserToTheTableOfUsers(
 			@RequestParam String UsernameToAdd,
@@ -180,9 +176,6 @@ public class UsersController {
 	
 	
 	
-	/*
-	 * TODO - utilize the @RequestBody here
-	 */
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
 	@ResponseBody
 	public String changePasswordForGivenUser(
