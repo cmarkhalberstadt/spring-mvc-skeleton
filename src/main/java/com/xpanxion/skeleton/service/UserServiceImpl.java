@@ -39,6 +39,51 @@ public class UserServiceImpl implements UserService {
 		return output;
 	}
 	
+	@Override
+	public boolean validateAndChangeUserPassword(String username, String oldPassword, String newPassword){
+
+		/*
+		 * Obtain the current password from the database
+		 */
+		String oldPasswordFromDatabase = 
+				this.getUserWithUsername(username).getPassword();
+		
+		if (oldPasswordFromDatabase.equals(oldPassword)){
+			if (newPassword.isEmpty()){
+				// the new password is empty - this check should always be redundant - should always happen client-side.
+				return false;
+			} else {
+				// change the password
+				this.changePasswordOfUser(username, newPassword);
+				return true;
+			}
+		} else {
+			// old password does not match password in database
+			return false;
+		}
+	}
+	
+	@Override
+	public boolean validateAndAddNewUserToDatabase(
+			String username,
+			String password
+			) {
+		// check to see if username is already in database
+		if (this.isUsernameInDatabase(username)){
+			// returning anything other than true says that the user will not be added to the database
+			return false;
+		}
+		
+		// make sure password field is not empty
+		if (password.isEmpty()){
+			// this check is redundant - should be done first on the client.
+			return false;
+		}
+		// add new user to the database 
+		this.addUserToDatabase(username, password);
+		return true;
+	}
+	
 	/**
 	 * Sets the UserDao for this service to use
 	 * 
@@ -65,8 +110,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUserFromDatabase(String Username) {
-		this.userDao.deleteUserFromDatabase(Username);
+	public boolean deleteUserFromDatabase(String Username) {
+		if (this.isUsernameInDatabase(Username)){
+			this.userDao.deleteUserFromDatabase(Username);
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 
 	@Override
@@ -79,6 +130,8 @@ public class UserServiceImpl implements UserService {
 			String Password) {
 		return this.userDao.isPasswordCorrectForGivenUsername(Username, Password);
 	}
+
+	
 	
 	
 	

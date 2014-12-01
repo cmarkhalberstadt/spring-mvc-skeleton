@@ -29,9 +29,9 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.username}')"></td>
 <hr />
 <h3>Username: ${bean.username}</h3>
 <table>
-<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.username}" id="oldPassword_${bean.username}" /></td><td class="errorMessage_changePassword">${oldPasswordIncorrectErrorMessage_changePassword}</td></tr>
-<tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.username}" id="newPassword_${bean.username}" /></td><td class="errorMessage_changePassword">${newPasswordConfirmErrorMessage_changePassword}</td></tr>
-<tr><td>Confirm New Password:</td><td><input type="password" name="confirmNewPassword_${bean.username}" id="confirmNewPassword_${bean.username}" /></td></tr>
+<tr><td>Old Password:</td><td><input type="password" name="oldPassword_${bean.username}" id="oldPassword_${bean.username}" /></td><td class="errorMessage_changePassword" id="errorMessage_changePassword_oldPassword_${bean.username}"></td></tr>
+<tr><td>New Password:</td><td><input type="password" name="newPassword_${bean.username}" id="newPassword_${bean.username}" /></td><td class="errorMessage_changePassword" id="errorMessage_changePassword_newPassword_${bean.username}"></td></tr>
+<tr><td>Confirm New Password:</td><td><input type="password" name="confirmNewPassword_${bean.username}" id="confirmNewPassword_${bean.username}" /></td><td class="errorMessage_changePassword" id="errorMessage_changePassword_confirmNewPassword_${bean.username}"></td></tr>
 <tr><td><input type="button" value="Submit" name="changePasswordSubmit_${bean.username}" id="changePasswordSubmit_${bean.username}" onclick="changePassword('${bean.username}')"/></td></tr>
 </table>
 <hr />
@@ -67,9 +67,7 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.username}')"></td>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
 
-var currentlyVisibleUserNameForPasswordChange = "";
-var displayChangePasswordErrorMessage_changePassword = ${displayChangePasswordErrorMessage_changePassword};
-var jQueryDivIDString = "#passwordChangeDiv_" + "${usernameOfLastEditedUserPassword_changePassword}";
+
 
 
 </script>

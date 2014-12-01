@@ -36,11 +36,6 @@ public class UsersController {
 	private UserService userService;
 	private String targetPageAfterUserAuthentication = "users";
 	
-	// variables used for displaying error messages on changing passwords
-	private String usernameOfLastEditedUserPassword_changePassword = "";
-	private boolean wasOldPasswordInputCorrectly_changePassword = true;
-	private boolean didNewPasswordAndConfirmNewPasswordMatch_changePassword = true;
-	private boolean displayNewPasswordErrorMessage_changePassword = false;
 	
 	/**
 	 * Returns the ModelAndView object for the users page
@@ -50,38 +45,10 @@ public class UsersController {
 	public ModelAndView getUsersPage(){
 		ModelAndView mAndV = new ModelAndView("users");
 		mAndV.addObject("users", this.userService.getUserBeans());
-		
-		mAndV = this.setErrorMessageOnUsersPage_changePassword(mAndV);
-		
 		return mAndV;
 	}
 	
 	
-	private ModelAndView setErrorMessageOnUsersPage_changePassword(ModelAndView mAndV){
-		// default values
-		mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "false");
-		mAndV.addObject("userNameOfLastEditedUserPassword_changePassword", this.usernameOfLastEditedUserPassword_changePassword);
-		mAndV.addObject("oldPasswordIncorrectErrorMessage_changePassword", "");
-		mAndV.addObject("newPasswordConfirmErrorMessage_changePassword", "");
-		
-		// regular logic
-		if (this.displayNewPasswordErrorMessage_changePassword){
-			if (this.wasOldPasswordInputCorrectly_changePassword){
-				if (this.didNewPasswordAndConfirmNewPasswordMatch_changePassword){
-					mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "false");
-				} else {
-					mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "true");
-					mAndV.addObject("newPasswordConfirmErrorMessage_changePassword", "Confirmation does not match.");
-				}
-			} else {
-				mAndV.addObject("displayChangePasswordErrorMessage_changePassword", "true");
-				mAndV.addObject("oldPasswordIncorrectErrorMessage_changePassword", "Incorrect old password.");
-			}
-			this.usernameOfLastEditedUserPassword_changePassword = "";
-			this.displayNewPasswordErrorMessage_changePassword = false;
-		}
-		return mAndV;
-	}
 	
 	
 	
@@ -89,99 +56,45 @@ public class UsersController {
 	@ResponseBody
 	public String addANewUserToTheTableOfUsers(
 			@RequestParam String UsernameToAdd,
-			@RequestParam String passwordToAdd, 
-			@RequestParam String confirmPasswordToAdd 
+			@RequestParam String passwordToAdd
 			){
-		
-		// check to see if username is already in database
-		if (this.userService.isUsernameInDatabase(UsernameToAdd)){
-			// returning anything other than true says that the user will not be added to the database
-			return "false";
-		}
-		
-		// validate the input user information
-		if (passwordToAdd.equals(confirmPasswordToAdd)){
-			
-			if (passwordToAdd.isEmpty()){
-				// this check is redundant - done first on the client.
-				return "false";
-			}
-			// add new user to the database 
-			this.userService.addUserToDatabase(UsernameToAdd, passwordToAdd);
+		boolean booleanReturnValue = this.userService.validateAndAddNewUserToDatabase(UsernameToAdd, passwordToAdd);
+		if (booleanReturnValue){
 			return "true";
 		} else {
-			// password input and password confirm did not match
 			return "false";
 		}
-		
-		
 	}
 	
 	
 	
 	
 	
-	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT, produces="application/json", consumes="application/json")
+	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
+	@ResponseBody
 	public String changePasswordForGivenUser(
 			@PathVariable String Username,
 			@RequestParam(value="oldPassword") String oldPassword,
-			@RequestParam(value="newPassword") String newPassword,
-			@RequestParam(value="confirmNewPassword") String confirmNewPassword
+			@RequestParam(value="newPassword") String newPassword
 			){
-		
-		this.usernameOfLastEditedUserPassword_changePassword = Username;
-		
-		String oldPasswordFromDatabase = 
-				this.userService.getUserWithUsername(Username).getPassword();
-		
-		/*
-		 * Obtain the current password from the database
-		 */
-		
-		this.wasOldPasswordInputCorrectly_changePassword = oldPasswordFromDatabase.equals(oldPassword);
-		this.didNewPasswordAndConfirmNewPasswordMatch_changePassword = newPassword.equals(confirmNewPassword);
-		if (this.wasOldPasswordInputCorrectly_changePassword){
-			// we know the old password is correct
-			//System.out.println("Old password is correct");
-			if (this.didNewPasswordAndConfirmNewPasswordMatch_changePassword){
-				// the two new passwords match - CHANGE THE PASSWORD
-				
-				//System.out.println("Change the password");
-				this.displayNewPasswordErrorMessage_changePassword = false;
-				this.usernameOfLastEditedUserPassword_changePassword = "";
-				// implement USERS DAO
-				this.userService.changePasswordOfUser(Username, newPassword);
-			} else {
-				// the old password is correct, but the new passwords do not match
-				this.displayNewPasswordErrorMessage_changePassword = true;
-				//System.out.println("Two input new passwords do not match.");
-			}
+		boolean booleanReturnValue =  this.userService.validateAndChangeUserPassword(Username, oldPassword, newPassword);
+		if (booleanReturnValue){
+			return "true";
 		} else {
-			// the old password is not correct
-			this.displayNewPasswordErrorMessage_changePassword = true;
-			//System.out.println("The old password is not correct.");
+			return "false";
 		}
-		
-		
-		
-		
-		
-		ModelAndView mAndV = new ModelAndView("main");
-		//String errorString = "";
-		
-		//mAndV.addObject("errorString", errorString);
-		//mAndV.addObject("userName", Username);
-		//return mAndV;
-		return "{\"name\":\"testName\", \"password\":\"testPassword\"}";
 	}
 	
 	
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.DELETE)
-	public ModelAndView deleteGivenUserFromDataBase(@PathVariable String Username){
-		
-
-		this.userService.deleteUserFromDatabase(Username);
-		return this.getUsersPage();
+	@ResponseBody
+	public String deleteGivenUserFromDataBase(@PathVariable String Username){
+		boolean booleanReturnValue = this.userService.deleteUserFromDatabase(Username);
+		if (booleanReturnValue){
+			return "true";
+		} else {
+			return "false";
+		}
 	}
 	
 	
