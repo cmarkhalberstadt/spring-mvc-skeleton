@@ -42,11 +42,6 @@ public class UsersController {
 	private boolean didNewPasswordAndConfirmNewPasswordMatch_changePassword = true;
 	private boolean displayNewPasswordErrorMessage_changePassword = false;
 	
-	// variables used for displaying error messages on adding users
-	private boolean wasInputUserNameADuplicate_addUser = false;
-	private boolean didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
-	private boolean displayErrorMessage_addUser = false;
-	
 	/**
 	 * Returns the ModelAndView object for the users page
 	 * 
@@ -57,39 +52,10 @@ public class UsersController {
 		mAndV.addObject("users", this.userService.getUserBeans());
 		
 		mAndV = this.setErrorMessageOnUsersPage_changePassword(mAndV);
-		mAndV = this.setErrorMessageOnUsersPage_addUser(mAndV);
 		
 		return mAndV;
 	}
 	
-	private ModelAndView setErrorMessageOnUsersPage_addUser(ModelAndView mAndV){
-		// set the default values
-		mAndV.addObject("displayAddNewUserErrorMessage_addNewUser", "false");
-		mAndV.addObject("usernameErrorMessage_addUser", "");
-		mAndV.addObject("passwordErrorMessage_addUser", "");
-		
-		// regular logic
-		if (this.displayErrorMessage_addUser){
-			mAndV.addObject("displayAddNewUserErrorMessage_addNewUser", "true");
-			if (this.wasInputUserNameADuplicate_addUser){
-				mAndV.addObject("usernameErrorMessage_addUser", "Username not available.");
-				mAndV.addObject("passwordErrorMessage_addUser", "");
-			} else {
-				if (this.didNewPasswordAndConfirmNewPasswordMatch_addUser){
-					// if we get to this point, it means that the password field is empty.
-					mAndV.addObject("usernameErrorMessage_addUser", "");
-					mAndV.addObject("passwordErrorMessage_addUser", "Please enter a valid password.");
-				} else {
-					// password and confirm password did not match
-					mAndV.addObject("usernameErrorMessage_addUser", "");
-					mAndV.addObject("passwordErrorMessage_addUser", "Confirmation password did not match.");
-				}
-			}
-			this.displayErrorMessage_addUser = false;
-		}
-		
-		return mAndV;
-	}
 	
 	private ModelAndView setErrorMessageOnUsersPage_changePassword(ModelAndView mAndV){
 		// default values
@@ -117,56 +83,35 @@ public class UsersController {
 		return mAndV;
 	}
 	
-	/**
-	 * Returns the ModelAndView object for the users page
-	 * 
-	 */
-	@RequestMapping(value="/addNewUserPage", method=RequestMethod.GET)
-	public ModelAndView getNewUserPage(){
-		ModelAndView mAndV = new ModelAndView("addNewUserPage");
-		mAndV.addObject("users", this.userService.getUserBeans());
-		String errorString="";
-		mAndV.addObject("errorString", errorString);
-		return mAndV;
-	}
+	
 	
 	@RequestMapping(value="/user", method=RequestMethod.POST)
-	public ModelAndView addANewUserToTheTableOfUsers(
+	@ResponseBody
+	public String addANewUserToTheTableOfUsers(
 			@RequestParam String UsernameToAdd,
 			@RequestParam String passwordToAdd, 
 			@RequestParam String confirmPasswordToAdd 
 			){
-		// set the defaults for the error message handling
-		this.displayErrorMessage_addUser = false;
-		this.wasInputUserNameADuplicate_addUser = false;
-		this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
 		
 		// check to see if username is already in database
 		if (this.userService.isUsernameInDatabase(UsernameToAdd)){
-			this.displayErrorMessage_addUser = true;
-			this.wasInputUserNameADuplicate_addUser = true;
-			this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
-			return this.getUsersPage();
+			// returning anything other than true says that the user will not be added to the database
+			return "false";
 		}
 		
 		// validate the input user information
 		if (passwordToAdd.equals(confirmPasswordToAdd)){
 			
 			if (passwordToAdd.isEmpty()){
-				this.displayErrorMessage_addUser = true;
-				this.wasInputUserNameADuplicate_addUser = false;
-				this.didNewPasswordAndConfirmNewPasswordMatch_addUser = true;
-				return this.getUsersPage();
+				// this check is redundant - done first on the client.
+				return "false";
 			}
 			// add new user to the database 
 			this.userService.addUserToDatabase(UsernameToAdd, passwordToAdd);
-			return this.getUsersPage();
+			return "true";
 		} else {
 			// password input and password confirm did not match
-			this.displayErrorMessage_addUser = true;
-			this.wasInputUserNameADuplicate_addUser = false;
-			this.didNewPasswordAndConfirmNewPasswordMatch_addUser = false;
-			return this.getUsersPage();
+			return "false";
 		}
 		
 		
@@ -176,8 +121,7 @@ public class UsersController {
 	
 	
 	
-	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT)
-	@ResponseBody
+	@RequestMapping(value="/user/{Username}", method=RequestMethod.PUT, produces="application/json", consumes="application/json")
 	public String changePasswordForGivenUser(
 			@PathVariable String Username,
 			@RequestParam(value="oldPassword") String oldPassword,

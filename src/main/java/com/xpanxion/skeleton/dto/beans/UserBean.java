@@ -1,8 +1,10 @@
 package com.xpanxion.skeleton.dto.beans;
 
+import java.io.Serializable;
 
 
-public class UserBean{
+
+public class UserBean implements Serializable{
 	private long id;
 	private String username;
 	private String password;

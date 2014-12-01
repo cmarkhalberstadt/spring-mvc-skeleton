@@ -1,0 +1,36 @@
+table.userDataTable {
+border: 5px;
+transition: max-height 0.75s ease-in;
+}
+
+.errorMessage_changePassword {
+display:none;
+}
+
+.errorMessage_addUser {
+display:none;
+}
+
+div.passwordChangeDiv {
+position:absolute;
+display:none;
+width:550px;
+left: 430px;
+}
+
+div.singleRow {
+positiong:relative;
+}
+
+.errorMessage_changePassword {
+color:red;
+}
+
+.errorMessage_addUser {
+color:red;
+}
+
+div.addNewUserFieldsDiv {
+display:none;
+width:550px;
+}

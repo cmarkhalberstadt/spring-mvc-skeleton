@@ -1,12 +1,14 @@
 package com.xpanxion.skeleton.dto.beans;
 
+import java.io.Serializable;
+
 /**
  * Test Bean Pojo
  * 
  * @author bsmith
  *
  */
-public class TestBean {
+public class TestBean implements Serializable{
 
     private long id;
 

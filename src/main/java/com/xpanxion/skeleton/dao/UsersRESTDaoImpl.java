@@ -19,6 +19,8 @@ import org.hibernate.Transaction;
 
 
 import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
@@ -33,56 +35,66 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
  * @author mhalberstadt
  *
  */
-@Repository
-public class UsersRESTDaoImpl implements UserDao {
-	private SessionFactory sessionFactory;
+//@Component
+public class UsersRESTDaoImpl {
 	
 	
 	private RestTemplate restTemplate;
+	
+	//@Autowired
+	public UsersRESTDaoImpl(RestTemplate template){
+		this.restTemplate = template;
+	}
+	
+	/**
+	 * Sets the RestTemplate
+	 * @param restTemplate - the RestTemplate to be set
+	 */
+	public void setRestTemplate(RestTemplate restTemplate){
+		this.restTemplate = restTemplate;
+	}
+	
+	public RestTemplate getRestTemplate(){
+		return this.restTemplate;
+	}
 
-	@Override
+	
 	public List<UserEntity> getAllItems() {
-		// TODO Auto-generated method stub
-		return null;
+		String url = "/api/users";
+		return (List<UserEntity>)this.restTemplate.getForObject(url, List.class);
 	}
 
-	@Override
-	public SessionFactory getSessionFactory() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
+	
 	public UserBean getUserWithUsername(String Username) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
+	
 	public void changePasswordOfUser(String Username, String newPassword) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void addUserToDatabase(String Username, String Password) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public void deleteUserFromDatabase(String Username) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	
 	public boolean isUsernameInDatabase(String Username) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
+	
 	public boolean isPasswordCorrectForGivenUsername(String Username,
 			String Password) {
 		// TODO Auto-generated method stub

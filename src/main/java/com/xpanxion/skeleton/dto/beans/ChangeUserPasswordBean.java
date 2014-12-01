@@ -1,6 +1,8 @@
 package com.xpanxion.skeleton.dto.beans;
 
-public class ChangeUserPasswordBean {
+import java.io.Serializable;
+
+public class ChangeUserPasswordBean implements Serializable{
 	
 	private String oldpassword;
 	private String newpassword;
