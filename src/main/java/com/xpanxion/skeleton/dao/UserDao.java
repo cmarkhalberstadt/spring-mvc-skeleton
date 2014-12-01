@@ -21,12 +21,7 @@ public interface UserDao {
      */
     List<UserEntity> getAllItems();
     
-    /**
-     * Returns the SessionFactory Object for this UserDao
-     * 
-     * @return the SessionFactory Object for this UserDao
-     */
-    public SessionFactory getSessionFactory();
+    
     
     public UserBean getUserWithUsername(String Username);
     public void changePasswordOfUser(String Username, String newPassword);

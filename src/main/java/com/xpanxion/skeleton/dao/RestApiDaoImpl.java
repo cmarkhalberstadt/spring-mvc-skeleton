@@ -10,11 +10,6 @@ import java.util.Collections;
 
 import javax.annotation.Resource;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.HibernateException;
-import org.hibernate.Transaction;
 
 
 
@@ -36,69 +31,72 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
  *
  */
 //@Component
-public class UsersRESTDaoImpl {
+public class RestApiDaoImpl implements RestApiDao {
 	
 	
-	private RestTemplate restTemplate;
-	
+	//private RestTemplate restTemplate;
+	/*
 	//@Autowired
-	public UsersRESTDaoImpl(RestTemplate template){
-		this.restTemplate = template;
+	public RestApiDaoImpl(RestTemplate template){
+		//this.restTemplate = template;
 	}
+	
 	
 	/**
 	 * Sets the RestTemplate
 	 * @param restTemplate - the RestTemplate to be set
 	 */
+	/*
+	@Resource
 	public void setRestTemplate(RestTemplate restTemplate){
 		this.restTemplate = restTemplate;
 	}
+	*/
 	
-	public RestTemplate getRestTemplate(){
-		return this.restTemplate;
-	}
-
-	
+	@Override
 	public List<UserEntity> getAllItems() {
 		String url = "/api/users";
-		return (List<UserEntity>)this.restTemplate.getForObject(url, List.class);
+		//return (List<UserEntity>)this.restTemplate.getForObject(url, List.class);
+		return null;
 	}
 
-	
+	@Override
 	public UserBean getUserWithUsername(String Username) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
+	@Override
 	public void changePasswordOfUser(String Username, String newPassword) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	
+	@Override
 	public void addUserToDatabase(String Username, String Password) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	
+	@Override
 	public void deleteUserFromDatabase(String Username) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	
+	@Override
 	public boolean isUsernameInDatabase(String Username) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	
+	@Override
 	public boolean isPasswordCorrectForGivenUsername(String Username,
 			String Password) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	
 	
 }

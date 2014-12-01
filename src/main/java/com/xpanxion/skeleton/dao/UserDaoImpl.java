@@ -222,14 +222,7 @@ public class UserDaoImpl implements UserDao {
         this.sessionFactory = factory;
     }
     
-    /**
-     * Returns the Session Factory being used by the dao
-     * 
-     * @return the session factory being used by this dao
-     */
-    public SessionFactory getSessionFactory(){
-    	return this.sessionFactory;
-    }
+    
 
 
 	@Override
