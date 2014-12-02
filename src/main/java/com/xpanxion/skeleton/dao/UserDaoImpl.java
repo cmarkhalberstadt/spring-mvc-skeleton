@@ -1,38 +1,16 @@
 package com.xpanxion.skeleton.dao;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Resource;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import org.hibernate.Query;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.HibernateException;
 import org.hibernate.Transaction;
-
-
-
-import org.hibernate.cfg.Configuration;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.dto.entity.UserEntity;
@@ -95,7 +73,7 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	
-	private ArrayList runSQLQueryAndGetReturnList(String SQLQuery){
+	private ArrayList<Object> runSQLQueryAndGetReturnList(String SQLQuery){
     	Session session = this.sessionFactory.openSession();
 		Transaction tx = null;
 		

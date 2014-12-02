@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,17 +13,11 @@ import com.xpanxion.skeleton.dao.UserDao;
 import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.dto.entity.UserEntity;
 
-/**
- * Implementation of the user test service interface. 
- * 
- * @author mhalberstadt
- *
- */
 @Transactional
 @Service
-public class UserServiceImpl implements UserService {
-	
-	private UserDao userDao;
+public class RestApiUserServiceImpl implements RestApiUserService {
+    
+	private RestApiDao userDao;
 	
 	@Override
 	public List<UserBean> getUserBeans() {
@@ -91,7 +84,7 @@ public class UserServiceImpl implements UserService {
 	 * @param dao the dao for this service to use
 	 */
 	@Resource
-	public void setUserDao(UserDao dao){
+	public void setUserDao(RestApiDao dao){
 		this.userDao = dao;
 	}
 
