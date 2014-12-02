@@ -65,12 +65,6 @@ name="CHANGE_PASSWORD" onclick="changePasswordClick('${bean.username}')"></td>
 
 <!-- Load all javascript components -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script type="text/javascript">
-
-
-
-
-</script>
 <script src="/resources/js/users.js" type="text/javascript"></script>
 </body>
 

@@ -42,7 +42,13 @@ public class UsersController {
 	
 	
 	
-	
+	/**
+	 * This method executes when a POST command is sent to add a new user to the database
+	 * @param UsernameToAdd - Username of 
+	 * @param passwordToAdd
+	 * @return - boolean value as a string ("true" for true, "false" for false). Returns true if
+	 * the user has been successfully added to the database
+	 */
 	@RequestMapping(value="/user", method=RequestMethod.POST)
 	@ResponseBody
 	public String addANewUserToTheTableOfUsers(
@@ -51,6 +57,7 @@ public class UsersController {
 			){
 		boolean booleanReturnValue = this.userService.validateAndAddNewUserToDatabase(UsernameToAdd, passwordToAdd);
 		if (booleanReturnValue){
+			
 			return "true";
 		} else {
 			return "false";
@@ -88,16 +95,18 @@ public class UsersController {
 		}
 	}
 	
-	
+	/**
+	 * Returns the ModelAndView Object for the users authentication page
+	 * @return - ModelAndView Object for the Users authentication page
+	 */
 	public ModelAndView getUsersAuthenticationPage(){
-		String errorString = "";
 		ModelAndView mAndV = new ModelAndView("usersAuthentication");
-		mAndV.addObject("errorString", errorString);
 		return mAndV;
 	}
 	
 	/**
-	 * Returns the ModelAndView object for the users authentication page with target page users
+	 * Returns the ModelAndView object for the users authentication page. The target page which the browser
+	 * should go to after a user is successfully authenticated is passed in as a String through a path variable.
 	 * 
 	 */
 	@RequestMapping(value="/usersAuthentication/{targetPage}", method=RequestMethod.GET)
@@ -107,43 +116,65 @@ public class UsersController {
 	}
 	
 	
-	
+	/**
+	 * This method executes when a user presses the submit button for password authentication.
+	 * 
+	 * @param Username - Username submitted as a path variable
+	 * @param Password - password
+	 * @param m
+	 * @return - The string returned will either be "falseUsername" indicating that the input username is not
+	 * in the database, "falsePassword" indicating that the password is incorrect for the given username, or the URL the 
+	 * browser should be sent to after authenticating.
+	 */
 	@RequestMapping(value="/user/{Username}", method=RequestMethod.GET)
-	public ModelAndView userNameAndPasswordSubmitWithPathVariable(@PathVariable String Username,@RequestParam("Password") String Password, Model m){
-		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
+	@ResponseBody
+	public String userNameAndPasswordSubmitWithPathVariable(@PathVariable String Username,@RequestParam("Password") String Password, Model m){
+		return this.getStringToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
 	}
 	
-	
+	/**
+	 * This method executes when a user presses the submit button for password authentication.
+	 * 
+	 * @param Username - Username submitted as a request parameter
+	 * @param Password - password
+	 * @param m
+	 * @return - The string returned will either be "falseUsername" indicating that the input username is not
+	 * in the database, "falsePassword" indicating that the password is incorrect for the given username, or the URL the 
+	 * browser should be sent to after authenticating.
+	 */
 	@RequestMapping(value="/user", method=RequestMethod.GET)
-	public ModelAndView userNameAndPasswordSubmitWithRequestParam(@RequestParam String Username,@RequestParam String Password, Model m){
-		return this.getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
+	@ResponseBody
+	public String userNameAndPasswordSubmitWithRequestParam(@RequestParam String Username,@RequestParam String Password, Model m){
+		return this.getStringToReturnBasedOnUserNameAndPasswordSubmission(Username, Password);
 	}
 	
-	
-	private ModelAndView getModelAndViewToReturnBasedOnUserNameAndPasswordSubmission(
+	/**
+	 * This method will return a string to be sent to the client to display the correct error message for
+	 * user authentication. The string returned will either be "falseUsername" indicating that the input username is not
+	 * in the database, "falsePassword" indicating that the password is incorrect for the given username, or the URL the 
+	 * browser should be sent to after authenticating.
+	 * 
+	 * @param userName - username for authentication
+	 * @param Password - password for authentication to match with the input username
+	 * @return - The string returned will either be "falseUsername" indicating that the input username is not
+	 * in the database, "falsePassword" indicating that the password is incorrect for the given username, or the URL the 
+	 * browser should be sent to after authenticating.
+	 * 
+	 */
+	private String getStringToReturnBasedOnUserNameAndPasswordSubmission(
 			String userName,
 			String Password){
-		ModelAndView mAndV = null;
-		String errorString = null;
-		
         if (this.userService.isUsernameInDatabase(userName)){
         	if (this.userService.isPasswordCorrectForGivenUsername(userName, Password)){
-        		if (this.targetPageAfterUserAuthentication.equals("users")){
-        			return this.getUsersPage();
+        		if (this.targetPageAfterUserAuthentication.isEmpty()){
+        			this.targetPageAfterUserAuthentication = "users";
         		}
-        		mAndV = new ModelAndView(this.targetPageAfterUserAuthentication);
-				return mAndV;
+        		return this.targetPageAfterUserAuthentication;
         	} else {
-        		errorString = "This password does not match the given user name. Please try again.";
-				mAndV = new ModelAndView("usersAuthentication");
-				mAndV.addObject("errorString", errorString);
-				return mAndV;
+        		return "falsePassword";
         	}
         } else {
-        	errorString = "This user name is not recognized. Please try again.";
-			mAndV = new ModelAndView("usersAuthentication");
-			mAndV.addObject("errorString", errorString);
-			return mAndV;
+        	return "falseUsername";
         }
 	}
 	

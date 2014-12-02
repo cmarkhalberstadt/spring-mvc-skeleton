@@ -1,0 +1,9 @@
+.errorMessage_password {
+	display:none;
+	color:red;
+}
+
+.errorMessage_username {
+	display:none;
+	color:red;
+}

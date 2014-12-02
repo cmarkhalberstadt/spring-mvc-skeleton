@@ -42,12 +42,8 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public boolean validateAndChangeUserPassword(String username, String oldPassword, String newPassword){
-
-		/*
-		 * Obtain the current password from the database
-		 */
-		String oldPasswordFromDatabase = 
-				this.getUserWithUsername(username).getPassword();
+		//Obtain the current password from the database 
+		String oldPasswordFromDatabase = this.getUserWithUsername(username).getPassword();
 		
 		if (oldPasswordFromDatabase.equals(oldPassword)){
 			if (newPassword.isEmpty()){

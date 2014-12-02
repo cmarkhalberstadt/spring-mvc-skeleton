@@ -41,17 +41,6 @@ public class RestApiDaoImpl implements RestApiDao {
 	
 	
 	private RestTemplate restTemplate;
-	/*
-	//@Autowired
-	public RestApiDaoImpl(RestTemplate template){
-		//this.restTemplate = template;
-	}
-	
-	
-	/**
-	 * Sets the RestTemplate
-	 * @param restTemplate - the RestTemplate to be set
-	 */
 	
 	@Resource
 	public void setRestTemplate(RestTemplate restTemplate){
@@ -61,7 +50,6 @@ public class RestApiDaoImpl implements RestApiDao {
 	
 	@Override
 	public List<UserEntity> getAllItems() {
-		
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String url = "http://localhost:8080/api/users";
