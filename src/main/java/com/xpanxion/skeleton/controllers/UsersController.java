@@ -2,6 +2,8 @@ package com.xpanxion.skeleton.controllers;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import com.xpanxion.skeleton.service.UserServiceImpl;
 @Controller
 public class UsersController {
 	
+	@Autowired
 	private RestApiUserService userService;
 	private String targetPageAfterUserAuthentication = "users";
 	
