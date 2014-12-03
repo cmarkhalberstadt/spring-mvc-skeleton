@@ -37,9 +37,9 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
  *
  */
 @Repository
-public class RestApiDaoImpl implements RestApiDao {
+public class RestApiDaoImpl implements UserDao {
 	
-	
+	private final String startingURL = "http://localhost:8080/rest";
 	private RestTemplate restTemplate;
 	
 	@Resource
@@ -52,7 +52,7 @@ public class RestApiDaoImpl implements RestApiDao {
 	public List<UserEntity> getAllItems() {
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String url = "http://localhost:8080/api/users";
+		String url = this.startingURL + "/api/users";
 		ArrayList output = this.restTemplate.getForObject(url, ArrayList.class);
 		ArrayList<UserEntity> retval = new ArrayList<UserEntity>();
 		
@@ -71,13 +71,13 @@ public class RestApiDaoImpl implements RestApiDao {
 
 	@Override
 	public UserBean getUserWithUsername(String Username) {
-		String url = "http://localhost:8080/api/user/" + Username;
+		String url = this.startingURL + "/api/user/" + Username;
 		return this.restTemplate.getForObject(url, UserBean.class);
 	}
 
 	@Override
 	public void changePasswordOfUser(String Username, String newPassword) {
-		String url = "http://localhost:8080/api/user/" + Username;
+		String url = this.startingURL + "/api/user/" + Username;
 		ChangeUserPasswordBean b = new ChangeUserPasswordBean();
 		b.setNewpassword(newPassword);
 		UserBean fromDB = this.getUserWithUsername(Username);
@@ -87,7 +87,7 @@ public class RestApiDaoImpl implements RestApiDao {
 
 	@Override
 	public void addUserToDatabase(String Username, String Password) {
-		String url = "http://localhost:8080/api/user";
+		String url = this.startingURL + "/api/user";
 		UserBean toAdd = new UserBean();
 		toAdd.setPassword(Password);
 		toAdd.setUsername(Username);
@@ -96,7 +96,7 @@ public class RestApiDaoImpl implements RestApiDao {
 
 	@Override
 	public void deleteUserFromDatabase(String Username) {
-		String url = "http://localhost:8080/api/user/" + Username;
+		String url = this.startingURL + "/api/user/" + Username;
 		this.restTemplate.delete(url);
 	}
 

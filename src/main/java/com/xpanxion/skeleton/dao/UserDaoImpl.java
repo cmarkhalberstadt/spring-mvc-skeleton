@@ -22,7 +22,7 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
  *
  */
 @Repository
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl  {
 	
 	private SessionFactory sessionFactory;
 

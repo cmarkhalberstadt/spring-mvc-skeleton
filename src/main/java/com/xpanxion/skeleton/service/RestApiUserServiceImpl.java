@@ -15,9 +15,9 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
 
 @Transactional
 @Service
-public class RestApiUserServiceImpl implements RestApiUserService {
+public class RestApiUserServiceImpl implements UserService {
     
-	private RestApiDao userDao;
+	private UserDao userDao;
 	
 	@Override
 	public List<UserBean> getUserBeans() {
@@ -84,7 +84,7 @@ public class RestApiUserServiceImpl implements RestApiUserService {
 	 * @param dao the dao for this service to use
 	 */
 	@Resource
-	public void setUserDao(RestApiDao dao){
+	public void setUserDao(UserDao dao){
 		this.userDao = dao;
 	}
 

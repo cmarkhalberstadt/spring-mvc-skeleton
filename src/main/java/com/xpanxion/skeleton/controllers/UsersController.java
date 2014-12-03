@@ -27,7 +27,7 @@ import com.xpanxion.skeleton.service.UserServiceImpl;
 public class UsersController {
 	
 	@Autowired
-	private RestApiUserService userService;
+	private UserService userService;
 	private String targetPageAfterUserAuthentication = "users";
 	
 	
@@ -187,7 +187,7 @@ public class UsersController {
      * @param service the  user test service to use in this controller. 
      */
     @Resource
-    public void setRestApiUserService(RestApiUserService service){
+    public void setUserService(UserService service){
     	this.userService = service;
     }
     
@@ -196,7 +196,7 @@ public class UsersController {
      * 
      * @return Returns the User Test Service
      */
-    public RestApiUserService getUserService(){
+    public UserService getUserService(){
     	return this.userService;
     }
     

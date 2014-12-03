@@ -23,7 +23,7 @@ import com.xpanxion.skeleton.service.UserService;
  * @author mhalberstadt
  *
  */
-@Controller
+//@Controller
 public class RESTAPIController {
 	private UserService userService;
 	
