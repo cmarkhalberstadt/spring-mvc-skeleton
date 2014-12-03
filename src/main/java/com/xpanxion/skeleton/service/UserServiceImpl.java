@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.xpanxion.skeleton.dao.RestApiDao;
+
 import com.xpanxion.skeleton.dao.UserDao;
 import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.dto.entity.UserEntity;
@@ -22,7 +22,7 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
  */
 @Transactional
 @Service
-public class UserServiceImpl  {
+public class UserServiceImpl implements UserService  {
 	
 	private UserDao userDao;
 	

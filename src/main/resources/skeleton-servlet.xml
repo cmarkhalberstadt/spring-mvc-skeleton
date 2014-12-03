@@ -27,6 +27,10 @@
          </property>
     </bean>
     
+    <!-- Sets which implementation of the UserDao interface it is that we want -->
+    <bean id="userDao" class="com.xpanxion.skeleton.dao.RestApiDaoImpl">
+    </bean> 
+    
     <bean id="httpClient" class="org.apache.http.impl.client.DefaultHttpClient">
         <constructor-arg>
             <bean class="org.apache.http.impl.conn.PoolingClientConnectionManager"/>

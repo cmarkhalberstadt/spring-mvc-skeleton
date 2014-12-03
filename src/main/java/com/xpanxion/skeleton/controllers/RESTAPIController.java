@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.xpanxion.skeleton.dto.beans.ChangeUserPasswordBean;
 import com.xpanxion.skeleton.dto.beans.UserBean;
-import com.xpanxion.skeleton.service.RestApiUserService;
 import com.xpanxion.skeleton.service.UserService;
 
 /**
