@@ -64,7 +64,6 @@ public class RestApiDaoImpl implements UserDao {
 			u.setUsername(b.getUsername());
 			retval.add(u);
 		}
-		
 		return retval;
 		
 	}
