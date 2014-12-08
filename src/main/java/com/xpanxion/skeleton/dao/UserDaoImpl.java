@@ -31,8 +31,6 @@ public class UserDaoImpl implements UserDao  {
 	public List<UserEntity> getAllItems() {
 		//return this.sessionFactory.getCurrentSession().getNamedQuery("userNamesAndPasswords.getAll").list();
 		
-		
-		
 		Session session = null;
 		Transaction tx = null;
 		ArrayList<UserEntity> retval = new ArrayList<UserEntity>();

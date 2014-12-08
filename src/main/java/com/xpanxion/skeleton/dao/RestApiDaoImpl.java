@@ -39,7 +39,7 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
 @Repository
 public class RestApiDaoImpl implements UserDao {
 	
-	private final String startingURL = "http://localhost:8080/rest";
+	private final String startingURL = "http://localhost:8080/restservice";
 	private RestTemplate restTemplate;
 	
 	@Resource

@@ -18,7 +18,7 @@ public class MainController {
 	 * Controller for the Main page
 	 * 
 	 */
-	@RequestMapping(value="**/main", method=RequestMethod.GET)
+	@RequestMapping(value={"/", "/main"}, method=RequestMethod.GET)
 	public ModelAndView getMainPage(){
 		ModelAndView mAndV = new ModelAndView("main");
 		return mAndV;
