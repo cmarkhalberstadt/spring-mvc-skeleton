@@ -28,11 +28,11 @@
     </bean>
     
     <!-- Sets the implementation of the UserDao interface -->
-    <bean id="userDao" class="com.xpanxion.skeleton.dao.RestApiDaoImpl">
-    </bean>
+    <!-- Uncomment the following line to use the REST API DAO -->
+    <bean id="userDao" class="com.xpanxion.skeleton.dao.RestApiDaoImpl"></bean>
     
-    <!-- <bean id="userDao" class="com.xpanxion.skeleton.dao.UserDaoImpl">
-    </bean>  -->
+    <!-- Uncomment the following line to use the UserDao which reads data from the database using hibernate -->
+    <!-- <bean id="userDao" class="com.xpanxion.skeleton.dao.UserDaoImpl"></bean>  -->
     
     
     
