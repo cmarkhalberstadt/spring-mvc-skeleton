@@ -66,9 +66,12 @@ public class RestApiDaoImpl implements UserDao {
 		ArrayList output = this.restTemplate.getForObject(url, ArrayList.class);
 		ArrayList<UserEntity> retval = new ArrayList<UserEntity>();
 		
+		// jon's rec
+		UserEntity u = null;
+		UserBean b = null;
 		for (Object o: output){
-			UserBean b = mapper.convertValue(o, UserBean.class);
-			UserEntity u = new UserEntity();
+			b = mapper.convertValue(o, UserBean.class);
+			u = new UserEntity();
 			u.setId(b.getId());
 			u.setPassword(b.getPassword());
 			u.setUsername(b.getUsername());

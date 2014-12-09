@@ -176,5 +176,14 @@
 			<version>4.0</version>
 		</dependency>
 		 -->
+		 
+		 <!-- Dependencies from custom created jar files -->
+		<dependency>
+		    <artifactId>dto.beans</artifactId>
+		    <groupId>com.xpanxion</groupId>
+		    <version>0.0.1</version>
+		    <scope>compile</scope>
+		</dependency>
+		 
 	</dependencies>
 </project>
