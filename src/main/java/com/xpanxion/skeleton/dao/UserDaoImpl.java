@@ -25,7 +25,8 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
 public class UserDaoImpl implements UserDao  {
 	
 	private SessionFactory sessionFactory;
-
+	
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<UserEntity> getAllItems() {
@@ -70,7 +71,11 @@ public class UserDaoImpl implements UserDao  {
 		return retval;
 	}
 	
-	
+	/**
+	 * Runs a SQL Query and returns an array list of Objects from the database
+	 * @param SQLQuery - SQL Query to be run
+	 * @return - An ArrayList of Objects returned from the database
+	 */
 	private ArrayList<Object> runSQLQueryAndGetReturnList(String SQLQuery){
     	Session session = this.sessionFactory.openSession();
 		Transaction tx = null;
@@ -100,6 +105,12 @@ public class UserDaoImpl implements UserDao  {
 		return returnValue;
     }
     
+	/**
+	 * Runs a SQL query on the database without returning a value from the database.
+	 * The int value returned indicates the status of the SQL Query
+	 * @param SQLQuery - String of SQL Query to be run
+	 * @return - the int value indicating the status of the SQL Query
+	 */
     private int runSQLQueryWithNoReturnValue(String SQLQuery){
     	Session session = this.sessionFactory.openSession();
 		Transaction tx = null;
@@ -129,6 +140,11 @@ public class UserDaoImpl implements UserDao  {
 		return returnValue;
     }
     
+    /**
+     * Returns the id for the given username. If the username is not in the database, -1 is returned
+     * @param username - username for which id should be returned
+     * @return - long value - the ID for the given username in the database or -1 if the username is not in the database
+     */
     private long getIDForGivenUsernameInDatabase(String username){
     	String tableName = "usernamesandpasswords";
 		String SQLQuery = "SELECT id FROM " + tableName + "\n";
@@ -153,6 +169,11 @@ public class UserDaoImpl implements UserDao  {
 		return -1;
     }
     
+    /**
+     * Returns the password for the given username. If the username is not in the database, the empty string is returned.
+     * @param username - username for which password should be returned
+     * @return - String - password for the given username or the empty string if the username is not in the database
+     */
     private String getPasswordForGivenUsernameInDatabase(String username){
         String tableName = "usernamesandpasswords";
 		String SQLQuery = "SELECT password FROM " + tableName + "\n";
@@ -176,6 +197,10 @@ public class UserDaoImpl implements UserDao  {
 		return "";
 	}
     
+    /**
+	 * Deletes a given user from the database.
+	 * @param Username - username of the user to be deleted
+	 */
     public void deleteGivenUserFromDataBase(String Username){
 		String tableName = "usernamesandpasswords";
 		
@@ -198,9 +223,7 @@ public class UserDaoImpl implements UserDao  {
         this.sessionFactory = factory;
     }
     
-    
-
-
+   
 	@Override
 	public UserBean getUserWithUsername(String Username) {
 		String password = this.getPasswordForGivenUsernameInDatabase(Username);
@@ -217,8 +240,8 @@ public class UserDaoImpl implements UserDao  {
 		retval.setId(this.getIDForGivenUsernameInDatabase(Username));
 		return retval;
 	}
-
-
+	
+	
 	@Override
 	public void changePasswordOfUser(String Username, String newPassword) {
 		String tableName = "usernamesandpasswords";
@@ -231,7 +254,7 @@ public class UserDaoImpl implements UserDao  {
 		this.runSQLQueryWithNoReturnValue(SQLQuery);
 	}
 
-
+	
 	@Override
 	public void addUserToDatabase(String Username, String Password) {
 		String tableName = "usernamesandpasswords";
@@ -242,13 +265,13 @@ public class UserDaoImpl implements UserDao  {
 		this.runSQLQueryWithNoReturnValue(SQLQuery);
 	}
 
-
+	
 	@Override
 	public void deleteUserFromDatabase(String Username) {
 		this.deleteGivenUserFromDataBase(Username);
 	}
-
-
+	
+	
 	@Override
 	public boolean isUsernameInDatabase(String Username) {
 		String toCheck = this.getPasswordForGivenUsernameInDatabase(Username);
@@ -262,7 +285,7 @@ public class UserDaoImpl implements UserDao  {
 		return true;
 	}
 
-
+	
 	@Override
 	public boolean isPasswordCorrectForGivenUsername(String Username,
 			String Password) {

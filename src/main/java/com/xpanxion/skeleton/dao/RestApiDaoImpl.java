@@ -39,15 +39,25 @@ import com.xpanxion.skeleton.dto.entity.UserEntity;
 @Repository
 public class RestApiDaoImpl implements UserDao {
 	
+	// need the complete URL to access the rest service
 	private final String startingURL = "http://localhost:8080/restservice";
+	
+	// the rest template object used to make rest calls
 	private RestTemplate restTemplate;
 	
+	/**
+	 * Sets the restTemplate object
+	 * @param restTemplate - Rest Template object to be used
+	 */
 	@Resource
 	public void setRestTemplate(RestTemplate restTemplate){
 		this.restTemplate = restTemplate;
 	}
 	
-	
+	/**
+	 * This method returns a list of all the users in the database through a call to the Rest API
+	 * @return - List of UserEntities for all users in the database
+	 */
 	@Override
 	public List<UserEntity> getAllItems() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -67,13 +77,23 @@ public class RestApiDaoImpl implements UserDao {
 		return retval;
 		
 	}
-
+	
+	/**
+	 * returns a UserBean for a user in the database with the given username through a call to the Rest API.
+	 * @param Username - username to be found in the database
+	 * @return - Userbean object of user in the database
+	 */
 	@Override
 	public UserBean getUserWithUsername(String Username) {
 		String url = this.startingURL + "/api/user/" + Username;
 		return this.restTemplate.getForObject(url, UserBean.class);
 	}
-
+	
+	/**
+	 * Changes the password of a given user in the database through a call to the rest API
+	 * @param Username - username of user to change password for
+	 * @param newPassword - new password to be set
+	 */
 	@Override
 	public void changePasswordOfUser(String Username, String newPassword) {
 		String url = this.startingURL + "/api/user/" + Username;
@@ -83,7 +103,12 @@ public class RestApiDaoImpl implements UserDao {
 		b.setOldpassword(fromDB.getPassword());
 		this.restTemplate.put(url, b);
 	}
-
+	
+	/**
+	 * adds a new user to the database through a call to the Rest API
+	 * @param Username - Username to be added to the database
+	 * @param Password - password of the user to be added into the database
+	 */
 	@Override
 	public void addUserToDatabase(String Username, String Password) {
 		String url = this.startingURL + "/api/user";
@@ -92,13 +117,23 @@ public class RestApiDaoImpl implements UserDao {
 		toAdd.setUsername(Username);
 		this.restTemplate.postForEntity(url, toAdd, UserBean.class);
 	}
-
+	
+	/**
+	 * Deletes a given user from the database through a call to the Rest API
+	 * @param Username - username of the user to be deleted
+	 */
 	@Override
 	public void deleteUserFromDatabase(String Username) {
 		String url = this.startingURL + "/api/user/" + Username;
 		this.restTemplate.delete(url);
 	}
-
+	
+	/**
+	 * Returns true if a given user is in the database. Otherwise, returns false.
+	 * Executed through a call to the Rest API
+	 * @param Username - username to check if it is in the database
+	 * @return - boolean value - true if username is in the database - false otherwise
+	 */
 	@Override
 	public boolean isUsernameInDatabase(String Username) {
 		UserBean fromDatabase = this.getUserWithUsername(Username);
@@ -113,7 +148,14 @@ public class RestApiDaoImpl implements UserDao {
 			}
 		}
 	}
-
+	
+	/**
+	 * Returns true if the username and password match for a given user record in the database. 
+	 * Executed through a call to the Rest API
+	 * @param Username - Username to be checked
+	 * @param Password - password to be checked
+	 * @return - boolean value - true if username and password match for the user record in the database - false otherwise
+	 */
 	@Override
 	public boolean isPasswordCorrectForGivenUsername(String Username,
 			String Password) {
