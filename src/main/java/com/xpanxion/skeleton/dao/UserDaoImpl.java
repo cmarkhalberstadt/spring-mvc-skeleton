@@ -31,6 +31,7 @@ public class UserDaoImpl implements UserDao  {
 	@SuppressWarnings("unchecked")
 	public List<UserEntity> getAllItems() {
 		//return this.sessionFactory.getCurrentSession().getNamedQuery("userNamesAndPasswords.getAll").list();
+		System.out.println("All users list obtained directly using hibernate.");
 		
 		Session session = null;
 		Transaction tx = null;
