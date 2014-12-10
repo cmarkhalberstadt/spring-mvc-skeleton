@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import com.xpanxion.skeleton.dto.beans.UserBean;
 import com.xpanxion.skeleton.dto.entity.UserEntity;
 
+
 /**
  * Implementation of the UserDao interface. 
  * 
@@ -26,49 +27,30 @@ public class UserDaoImpl implements UserDao  {
 	
 	private SessionFactory sessionFactory;
 	
+	private final String SQLQueryForGetAllItems = "SELECT * FROM usernamesandpasswords";
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<UserEntity> getAllItems() {
 		//return this.sessionFactory.getCurrentSession().getNamedQuery("userNamesAndPasswords.getAll").list();
 		System.out.println("All users list obtained directly using hibernate.");
-		
-		Session session = null;
-		Transaction tx = null;
+		ArrayList output = this.runSQLQueryAndGetReturnList(this.SQLQueryForGetAllItems);
 		ArrayList<UserEntity> retval = new ArrayList<UserEntity>();
-		
-		try{
-			session = this.sessionFactory.openSession();
-		} catch (HibernateException ex){
-			System.out.println("Exception thrown while opening session: " + ex);
+		Object[] objArray = null;
+		UserEntity toAddToReturnValue = null;
+		for (Object fromOutput:output){
+			objArray = (Object[])fromOutput;
+			toAddToReturnValue = new UserEntity();
+			toAddToReturnValue.setUsername((String)objArray[0]);
+			toAddToReturnValue.setPassword((String)objArray[1]);
+			toAddToReturnValue.setId(((Integer)objArray[2]).longValue());
+			retval.add(toAddToReturnValue);
 		}
 		
-		try {
-			tx = session.beginTransaction();
-		} catch (HibernateException ex){
-			System.out.println("Expection thrown while beginning transaction: " + ex);
-		}
-		
-		retval = (ArrayList<UserEntity>) session.createQuery("From UserEntity").list();
-		
-		try {
-			tx.commit();
-		} catch (HibernateException ex){
-			System.out.println("Expection thrown while committing transaction: " + ex);
-			if (tx != null){
-				tx.rollback();
-			}
-		}
-		
-		
-		try {
-			session.close();
-		} catch (HibernateException ex){
-			System.out.println("Exception thrown while closing session: " + ex);
-		}
-		
+		// sort the list based on the ID number
 		Collections.sort(retval);
 		
+		// return the sorted list
 		return retval;
 	}
 	

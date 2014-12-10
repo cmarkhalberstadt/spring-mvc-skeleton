@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 import com.xpanxion.skeleton.service.UserService;
-import com.xpanxion.skeleton.service.UserServiceImpl;
+
 
 /**
  * Controller for the Users page
