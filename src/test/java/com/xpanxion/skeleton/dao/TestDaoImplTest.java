@@ -19,8 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.xpanxion.skeleton.dao.TestDaoImpl;
-import com.xpanxion.skeleton.dto.entity.TestEntity;
+import com.xpanxion.springmvctutorial.dao.TestDaoImpl;
+import com.xpanxion.springmvctutorial.dto.entity.TestEntity;
 
 /**
  * @author brian

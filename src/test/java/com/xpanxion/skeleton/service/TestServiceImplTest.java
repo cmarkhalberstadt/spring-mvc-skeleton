@@ -15,10 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.xpanxion.skeleton.dao.TestDao;
-import com.xpanxion.skeleton.dto.beans.TestBean;
-import com.xpanxion.skeleton.dto.entity.TestEntity;
-import com.xpanxion.skeleton.service.TestServiceImpl;
+import com.xpanxion.springmvctutorial.dao.TestDao;
+import com.xpanxion.springmvctutorial.dto.beans.TestBean;
+import com.xpanxion.springmvctutorial.dto.entity.TestEntity;
+import com.xpanxion.springmvctutorial.service.TestServiceImpl;
 
 /**
  * @author brian
