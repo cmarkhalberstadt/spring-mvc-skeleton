@@ -178,8 +178,30 @@
 		 -->
 		 
 		 <!-- Dependencies from custom created jar files -->
+		<!-- Dependencies from custom created jar files -->
 		<dependency>
-		    <artifactId>dto.beans</artifactId>
+		    <artifactId>springmvctutorial.dto.beans</artifactId>
+		    <groupId>com.xpanxion</groupId>
+		    <version>0.0.1</version>
+		    <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <artifactId>springmvctutorial.dto.entity</artifactId>
+		    <groupId>com.xpanxion</groupId>
+		    <version>0.0.1</version>
+		    <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <artifactId>springmvctutorial.dao</artifactId>
+		    <groupId>com.xpanxion</groupId>
+		    <version>0.0.1</version>
+		    <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+		    <artifactId>springmvctutorial.service</artifactId>
 		    <groupId>com.xpanxion</groupId>
 		    <version>0.0.1</version>
 		    <scope>compile</scope>

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
-import com.xpanxion.skeleton.service.UserService;
+import com.xpanxion.springmvctutorial.service.UserService;
 
 
 /**

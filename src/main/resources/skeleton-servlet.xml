@@ -17,6 +17,11 @@
     <mvc:annotation-driven />
     <mvc:resources mapping="/resources/**" location="/resources/webtheme/" />
     <context:component-scan base-package="com.xpanxion.skeleton"/>
+    
+    
+	<bean id="userService" class="com.xpanxion.springmvctutorial.service.UserServiceImpl"></bean>
+	<bean id="testDao" class="com.xpanxion.springmvctutorial.dao.TestDaoImpl"></bean>
+	<bean id="testService" class="com.xpanxion.springmvctutorial.service.TestServiceImpl"></bean>
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
          <property name="prefix">
@@ -29,7 +34,7 @@
     
     <!-- Sets the implementation of the UserDao interface -->
     <!-- Uncomment the following line to use the REST API DAO -->
-    <bean id="userDao" class="com.xpanxion.skeleton.dao.RestApiDaoImpl"></bean>
+    <bean id="userDao" class="com.xpanxion.springmvctutorial.dao.RestApiDaoImpl"></bean>
     
     <!-- Uncomment the following line to use the UserDao which reads data from the database using hibernate -->
     <!-- <bean id="userDao" class="com.xpanxion.skeleton.dao.UserDaoImpl"></bean>  -->
